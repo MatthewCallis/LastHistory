@@ -669,8 +669,9 @@
 		newMouseOverLayer = hitLayer;
 		
 		// highlight current event
-		if ([hitData conformsToProtocol:@protocol(LHEvent)])
+		if ([hitData conformsToProtocol:@protocol(LHEvent)]) {
 			newHighlightedEvent = hitData;
+        }
 	}
 	
 	// change layers according to mouse-over information
@@ -727,9 +728,12 @@
 		return;
 	
 	CGFloat layerWidth = mainLayer.bounds.size.width;
-	
+    CGFloat scale = self.window.backingScaleFactor;
+    mainLayer.contentsScale = scale;
+
 	// create scroll layer
 	_scrollLayer = [CAScrollLayer layer];
+    _scrollLayer.contentsScale = scale;
 	_scrollLayer.name = @"scrollLayer";
 	_scrollLayer.scrollMode = kCAScrollHorizontally;
 	_scrollLayer.autoresizingMask = (kCALayerWidthSizable | kCALayerHeightSizable);
@@ -740,6 +744,7 @@
 	
 	// create container layers for labels, history entries and calendar entries
 	_labelsLayerX = [CALayer layer];
+    _labelsLayerX.contentsScale = scale;
 //	_labelsLayerX.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, .2));
 	_labelsLayerX.name = @"labelsLayerX";
 	_labelsLayerX.anchorPoint = CGPointMake(0, 0);
@@ -749,6 +754,7 @@
 	[_scrollLayer addSublayer:_labelsLayerX];
 	
 	_labelsLayerY = [CALayer layer];
+    _labelsLayerY.contentsScale = scale;
 	_labelsLayerY.name = @"labelsLayerY";
 	_labelsLayerY.anchorPoint = CGPointMake(0, 0);
 	_labelsLayerY.autoresizingMask = kCALayerMinYMargin;
@@ -762,6 +768,7 @@
 	[_scrollLayer addSublayer:listeningHistoryStream];
 	
 	_infoLayer = [CATextLayer layer];
+    _infoLayer.contentsScale = scale;
 	_infoLayer.name = @"infoLayer";
 	_infoLayer.zPosition = kHighlightZ;
 	_infoLayer.anchorPoint = CGPointMake(0, 1); // position info box below/right cursor
@@ -771,6 +778,7 @@
 	[_scrollLayer addSublayer:_infoLayer];
 	
 	_crosshairXLayer = [CALayer layer];
+    _crosshairXLayer.contentsScale = scale;
 	_crosshairXLayer.name = @"crosshairXLayer";
 	_crosshairXLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, CROSSHAIR_ALPHA));
 	_crosshairXLayer.zPosition = 1;
@@ -780,6 +788,7 @@
 	[_scrollLayer addSublayer:_crosshairXLayer];
 	
 	_crosshairYLayer = [CALayer layer];
+    _crosshairYLayer.contentsScale = scale;
 	_crosshairYLayer.name = @"crosshairYLayer";
 	_crosshairYLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, CROSSHAIR_ALPHA));
 	_crosshairYLayer.zPosition = 1;
@@ -790,6 +799,7 @@
 	
 	// container layer for event highlight layers
 	_highlightsLayer = [CALayer layer];
+    _highlightsLayer.contentsScale = scale;
 	_highlightsLayer.name = @"highlightsLayer";
 	_highlightsLayer.zPosition = kHighlightLayerZ;
 	_highlightsLayer.anchorPoint = CGPointMake(0, 0);
@@ -801,6 +811,7 @@
 	
 	// mouse-over event highlight layer
 	_eventHighlightLayer = [CALayer layer];
+    _eventHighlightLayer.contentsScale = scale;
 	_eventHighlightLayer.name = @"eventHighlightLayer";
 	_eventHighlightLayer.anchorPoint = CGPointMake(0, 0);
 	_eventHighlightLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0.0, .15));
@@ -811,6 +822,7 @@
 	
 	// playing event highlight layer
 	_currentEventHighlightLayer = [CALayer layer]; // will be added to superlayer later
+    _currentEventHighlightLayer.contentsScale = scale;
 	_currentEventHighlightLayer.name = @"currentEventHighlightLayer";
 	_currentEventHighlightLayer.anchorPoint = CGPointMake(0, 0);
 	_currentEventHighlightLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericRGB(0, 0.5, 0, .15));
@@ -869,6 +881,8 @@
 	// clear all existing layers
 	[[_labelsLayerX.sublayers copy] makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
 	
+    CGFloat scale = self.window.backingScaleFactor;
+
 	NSCalendar *calendar = [NSCalendar currentCalendar];
 	NSDate *firstDate = [calendar dateFromComponents:[calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit)
 																 fromDate:self.document.firstHistoryEntry.timestamp]];
@@ -905,9 +919,8 @@
 								  1, month == 1 ? markingImageSize.height : markingImageSize.height/4.0));
 			
 			// draw month name
-			CGFloat monthWidth = [self xPositionForDate:nextMarkingDate]-STREAM_PADDING_X+padding - monthPosX;
-			NSAttributedString *monthString = [[NSAttributedString alloc] initWithString:[monthNames objectAtIndex:(month-1)]
-																			  attributes:stringAttrs];
+			CGFloat monthWidth = [self xPositionForDate:nextMarkingDate] - STREAM_PADDING_X + padding - monthPosX;
+			NSAttributedString *monthString = [[NSAttributedString alloc] initWithString:[monthNames objectAtIndex:(month-1)] attributes:stringAttrs];
 			NSSize monthSize = [monthString size];
 			[monthString drawAtPoint:NSMakePoint((monthPosX + monthWidth/2.0) - monthSize.width/2.0, 1.0)];
 			
@@ -917,6 +930,7 @@
 		[markingImage unlockFocus];
 		
 		CALayer *markingLayer = [CALayer layer];
+        markingLayer.contentsScale = scale;
 		markingLayer.anchorPoint = CGPointMake(0, 0);
 		markingLayer.bounds = CGRectMake(0, 0, markingImageSize.width, markingImageSize.height);
 		markingLayer.position = CGPointMake([self xPositionForDate:self.timelineStart]-padding, 0);
@@ -936,6 +950,7 @@
 			NSAttributedString *yearString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d", year]
 																			 attributes:stringAttrs];
 			CATextLayer *layer = [CATextLayer layer];
+            layer.contentsScale = scale;
 			layer.string = yearString;
 			layer.anchorPoint = CGPointMake(0.5, 0); // position string centered/above layer position
 			
@@ -964,11 +979,11 @@
 		[[NSColor grayColor] setFill];
 		for (NSUInteger hour = 1; hour <= 24; hour++)
 		{
-			CGFloat positionY = [self yPositionForTime:hour*SECONDS_PER_HOUR];
+			CGFloat positionY = [self yPositionForTime:hour * SECONDS_PER_HOUR];
 			NSRectFill(NSMakeRect(0.0, positionY, markingImageSize.width, 1.0));
 			
 			NSString *label = [NSString stringWithFormat:@"%u h", hour];
-			[label drawAtPoint:NSMakePoint(2.0, positionY + 2.0)
+			[label drawAtPoint:NSMakePoint(2.0 / scale, positionY + 2.0)
 				withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSColor grayColor], NSForegroundColorAttributeName, nil]];
 		}
 		[markingImage unlockFocus];

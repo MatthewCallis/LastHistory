@@ -155,8 +155,9 @@
 
 - (void)layoutSublayers
 {
-	if (self.superlayer.isHidden)
+	if (self.superlayer.isHidden) {
 		return;
+    }
 	
 	// resize history entries layer
 	CGFloat width = [self.view xPositionForDate:self.view.timelineEnd] - [self.view xPositionForDate:self.view.timelineStart];
@@ -237,7 +238,7 @@
 	
 	// draw playlist paths from adjacent tracks dashed
 	const CGFloat pattern[] = {1.0, 2.0};
-	[_playlistPath setLineDash:pattern count:2 phase:0.0];
+	[_playlistPath setLineDash:pattern count:1 phase:0.0];
 	[_playlistPath stroke];
 	
 	[NSGraphicsContext restoreGraphicsState];
@@ -247,13 +248,13 @@
 - (void)addLineFrom:(LHHistoryEntry *)start to:(LHHistoryEntry *)end toPath:(NSBezierPath *)path
 {
 	NSPoint startPoint = NSPointFromCGPoint(start.layer.position);
-	NSPoint endPoint = NSPointFromCGPoint(end.layer.position);
-	
+	NSPoint endPoint   = NSPointFromCGPoint(end.layer.position);
+
 	// draw path
 	CGFloat offset = ABS(startPoint.y - endPoint.y) * 0.4; // curvage depends on vertical distance
 	CGFloat controlOffsetX = offset * (startPoint.x < endPoint.x ? 1 : -1); // curve left/right
 	CGFloat controlOffsetY = offset * 0.5 * (startPoint.y < endPoint.y ? 1 : -1); // curve up/down
-	int controlOffsetEndXFlip = (ABS(startPoint.x - endPoint.x) > 100.0) ? -1 : 1; // approach end point from closer side if further away
+	NSInteger controlOffsetEndXFlip = (ABS(startPoint.x - endPoint.x) > 100.0) ? -1 : 1; // approach end point from closer side if further away
 	[path moveToPoint:startPoint];
 	[path curveToPoint:endPoint
 		 controlPoint1:NSMakePoint(startPoint.x + controlOffsetX, startPoint.y + controlOffsetY)
@@ -265,7 +266,7 @@
 				toSimilarEntry:(LHHistoryEntry *)similarEntry
 				   inPlaylists:(NSArray *)playlists
 					 ascending:(BOOL)ascending
-{
+{    
 	NSArray *otherEntries = [similarEntry adjacentEntriesInPlaylists:playlists ascending:ascending];
 	NSArray *otherPlaylist = [otherEntries valueForKey:@"track"];
 	
@@ -281,12 +282,9 @@
 		{
 			//NSLog(@"%u = %u: %@", i, playlistIndex, track.displayName);
 			LHHistoryEntry *connectedEntry = [entries objectAtIndex:playlistIndex];
-			
-			[self addLineFrom:connectedEntry
-						   to:otherPlaylistEntry
-					   toPath:_playlistPath];
+
+			[self addLineFrom:connectedEntry to:otherPlaylistEntry toPath:_playlistPath];
 		}
-		
 	}
 	//NSLog(@"=====");
 }
@@ -321,13 +319,12 @@
 			// loop through other history entries for same track
 			for (LHHistoryEntry *similarEntry in newEntry.track.historyEntries)
 			{
-				if ([similarEntry isEqual:newEntry])
+				if ([similarEntry isEqual:newEntry]) {
 					continue;
+                }
 				
 				// add lines to similar entry
-				[self addLineFrom:newEntry
-							   to:similarEntry
-						   toPath:_directPath];
+				[self addLineFrom:newEntry to:similarEntry toPath:_directPath];
 				
 				// connect other entries' playlist (forward and backward)
 				[self connectPlaylistEntries:entriesFwd
