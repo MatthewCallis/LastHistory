@@ -21,7 +21,7 @@
 	return nil;
 }
 
-- (id)initWithView:(LHHistoryView *)view
+- (instancetype)initWithView:(LHHistoryView *)view
 {
 	self = [super init];
 	if (self != nil) {
@@ -32,7 +32,7 @@
 	return self;
 }
 
-- (id)initWithLayer:(id)layer
+- (instancetype)initWithLayer:(id)layer
 {
 	self = [super initWithLayer:layer];
 	if (self != nil) {

@@ -23,9 +23,6 @@
 	CGColorRef result = CGColorCreate(colorSpace, components);
 	CGColorSpaceRelease(colorSpace);
 	
-	if (result)
-		CFMakeCollectable(result);
-	
 	return result;
 }
 

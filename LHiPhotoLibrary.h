@@ -28,11 +28,11 @@
 
 + (LHiPhotoLibrary *)defaultLibrary;
 
-- (id)initWithURL:(NSURL *)libraryURL;
+- (instancetype)initWithURL:(NSURL *)libraryURL NS_DESIGNATED_INITIALIZER;
 
 - (LHiPhotoPhoto *)imageForKey:(NSString *)key inRoll:(LHiPhotoRoll *)roll;
 
-- (BOOL)loadLibrary;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL loadLibrary;
 
 @property (readonly) NSURL *libraryURL;
 

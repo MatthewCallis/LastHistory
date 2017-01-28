@@ -11,6 +11,6 @@
 
 @interface NSColor (Extras)
 
-- (CGColorRef)cgColor;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGColorRef cgColor;
 
 @end

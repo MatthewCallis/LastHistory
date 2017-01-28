@@ -37,16 +37,16 @@
 	if (!tracks)
 		return;
 	
-	self.progressMessage = [NSString stringWithFormat:@"Retrieving tags for %u tracks...", tracks.count];
+	self.progressMessage = [NSString stringWithFormat:@"Retrieving tags for %lu tracks...", (unsigned long)tracks.count];
 	self.progressIndeterminate = NO;
 	
-	LFWebService *webService = [[NSApp delegate] lfWebService];
+	LFWebService *webService = (id)[NSApp.delegate lfWebService];
 	NSAssert(webService, @"No web service");
 	
 	NSUInteger processedCount = 0;
 	for (LHTrack *track in tracks)
 	{
-		if ([self isCancelled]) {
+		if (self.cancelled) {
 			[context rollback];
 			return;
 		}
@@ -55,27 +55,27 @@
 			continue;
 		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:4];
-		[params setObject:track.artist.name forKey:@"artist"];
-		[params setObject:track.name forKey:@"track"];
+		params[@"artist"] = track.artist.name;
+		params[@"track"] = track.name;
 		if (track.mbid)
-			[params setObject:track.mbid forKey:@"mbid"];
+			params[@"mbid"] = track.mbid;
 		if (webService.userName)
-			[params setObject:webService.userName forKey:@"username"];
+			params[@"username"] = webService.userName;
 		
 		NSError *error = nil;
 		NSXMLDocument *xml = [webService callMethod:@"track.getTopTags" withParameters:params error:&error];
-		if (!xml && error && [error code] != 500) // ignore internal server errors
+		if (!xml && error && error.code != 500) // ignore internal server errors
 			[self.document presentError:error];
 		
-		NSArray *tagElements = [[[xml.rootElement elementsForName:@"toptags"] lastObject] children];
+		NSArray *tagElements = [xml.rootElement elementsForName:@"toptags"].lastObject.children;
 		
 		for (NSXMLElement *tagElement in tagElements)
 		{
-			NSString *tagName = [[[tagElement elementsForName:@"name"] lastObject] stringValue];
-			short tagCount = [[[[tagElement elementsForName:@"count"] lastObject] stringValue] intValue];
+			NSString *tagName = [tagElement elementsForName:@"name"].lastObject.stringValue;
+			short tagCount = [tagElement elementsForName:@"count"].lastObject.stringValue.intValue;
 			if (tagName.length > 0 && tagCount >= TAG_MIN_COUNT)
 			{
-				LHTag *tag = [[LHTag fetchTagsWithName:context name:tagName] lastObject];
+				LHTag *tag = [LHTag fetchTagsWithName:context name:tagName].lastObject;
 				if (!tag) {
 					tag = [[LHTag alloc] initWithEntity:_tagEntity insertIntoManagedObjectContext:context];
 					tag.name = tagName;
@@ -90,14 +90,14 @@
 		self.progress = (float)processedCount / tracks.count;
 		
 		if ((++processedCount % PROCESS_CHUNK_SIZE) == 0) {
-			if (![self saveContext])
+			if (!self.saveContext)
 				return;
 			
 //			NSLog(@"Retrieved tags for %u tracks", processedCount);
 		}
 	}
 	
-	[self saveContext];
+	self.saveContext;
 	
 	NSLog(@"Finished retrieving tags for tracks");
 }

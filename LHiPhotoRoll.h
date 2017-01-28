@@ -15,7 +15,7 @@
 
 
 @interface LHiPhotoRoll : NSObject <LHEvent> {
-	LHiPhotoLibrary __weak *_library;
+	LHiPhotoLibrary *_library;
 	
 	NSString *_name;
 	NSDate *_timestamp;
@@ -23,12 +23,12 @@
 	NSString *_keyPhotoKey;
 	NSArray *_photoKeys;
 	
-	NSArray __weak *_photos; // garbage-collected cache
+	NSArray *_photos; // garbage-collected cache
 }
 
-- (id)initWithDictionary:(NSDictionary *)rollDict forLibrary:(LHiPhotoLibrary *)library;
+- (instancetype)initWithDictionary:(NSDictionary *)rollDict forLibrary:(LHiPhotoLibrary *)library NS_DESIGNATED_INITIALIZER;
 
-@property (readonly) LHiPhotoLibrary __weak *library;
+@property (readonly) LHiPhotoLibrary *library;
 
 @property (readonly) NSString *name;
 @property (readonly) NSDate *timestamp;

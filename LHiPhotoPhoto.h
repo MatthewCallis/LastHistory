@@ -11,7 +11,7 @@
 @class LHiPhotoRoll;
 
 @interface LHiPhotoPhoto : NSObject {
-	LHiPhotoRoll __weak *_roll;
+	LHiPhotoRoll *_roll;
 	
 	NSString *_caption;
 	NSDate *_timestamp;
@@ -20,9 +20,9 @@
 	NSString *_thumbPath;
 }
 
-- (id)initWithDictionary:(NSDictionary *)imageDict inRoll:(LHiPhotoRoll *)roll;
+- (instancetype)initWithDictionary:(NSDictionary *)imageDict inRoll:(LHiPhotoRoll *)roll NS_DESIGNATED_INITIALIZER;
 
-@property (readonly) LHiPhotoRoll __weak *roll;
+@property (readonly) LHiPhotoRoll *roll;
 
 @property (readonly) NSString *caption;
 @property (readonly) NSDate *timestamp;

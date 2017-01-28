@@ -19,17 +19,17 @@
 	static id defaultLibrary = nil;
 	if (!defaultLibrary) {
 		[[NSUserDefaults standardUserDefaults] synchronize];
-		NSArray *dbs = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.apple.iApps"] objectForKey:@"iPhotoRecentDatabases"];
-		if ([dbs count] > 0) {
-			NSURL *url = [NSURL URLWithString:[dbs objectAtIndex:0]];
-			if ([url isFileURL])
+		NSArray *dbs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.apple.iApps"][@"iPhotoRecentDatabases"];
+		if (dbs.count > 0) {
+			NSURL *url = [NSURL URLWithString:dbs[0]];
+			if (url.fileURL)
 				defaultLibrary = [[self alloc] initWithURL:url];
 		}
 	}
 	return defaultLibrary;
 }
 
-- (id)initWithURL:(NSURL *)libraryURL
+- (instancetype)initWithURL:(NSURL *)libraryURL
 {
 	self = [super init];
 	if (self != nil) {
@@ -39,7 +39,7 @@
 		_imageCache = [NSMapTable mapTableWithStrongToWeakObjects];
 #endif
 		
-		[self loadLibrary];
+		self.loadLibrary;
 	}
 	return self;
 }
@@ -54,7 +54,7 @@
 	
 	if (!result)
 	{
-		NSDictionary *imageDict = [_imageDictsByKey objectForKey:key];
+		NSDictionary *imageDict = _imageDictsByKey[key];
 		if (imageDict) {
 			result = [[LHiPhotoPhoto alloc] initWithDictionary:imageDict inRoll:roll];
 #if USE_IMAGE_CACHE
@@ -68,6 +68,8 @@
 
 - (BOOL)loadLibrary
 {
+    return NO;
+
 	if (_rolls && _imageDictsByKey)
 		return YES;
 	
@@ -82,7 +84,7 @@
 		return NO;
 	}
 	
-	NSArray *rollsDicts = [library objectForKey:@"List of Rolls"];
+	NSArray *rollsDicts = library[@"List of Rolls"];
 	if (!rollsDicts) {
 		NSLog(@"Error: No rolls found in iPhoto library.");
 	} else {
@@ -92,15 +94,15 @@
 			LHiPhotoRoll *roll = [[LHiPhotoRoll alloc] initWithDictionary:rollDict forLibrary:self];
 			[rolls addObject:roll];
 		}
-		NSLog(@"Read %d rolls from iPhoto.", rolls.count);
+		NSLog(@"Read %lu rolls from iPhoto.", (unsigned long)rolls.count);
 		_rolls = [rolls copy];
 	}
 	
-	NSDictionary *images = [library objectForKey:@"Master Image List"];
+	NSDictionary *images = library[@"Master Image List"];
 	if (!images) {
 		NSLog(@"Error: No images found in iPhoto library.");
 	} else {
-		NSLog(@"Read %d images from iPhoto.", images.count);
+		NSLog(@"Read %lu images from iPhoto.", (unsigned long)images.count);
 		_imageDictsByKey = [images copy];
 	}
 	

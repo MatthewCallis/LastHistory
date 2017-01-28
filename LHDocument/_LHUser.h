@@ -11,7 +11,7 @@
 
 @interface _LHUser : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHUserID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHUserID *objectID;
 
 
 
@@ -23,7 +23,7 @@
 
 
 @property (nonatomic, retain) NSSet* historyEntries;
-- (NSMutableSet*)historyEntriesSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *historyEntriesSet;
 
 
 

@@ -27,7 +27,9 @@
 	NSEntityDescription	*_artistEntity;
 }
 
-- (id)initWithDocument:(LHDocument *)document andUsername:(NSString *)username;
+- (instancetype)initWithDocument:(LHDocument *)document andUsername:(NSString *)username NS_DESIGNATED_INITIALIZER;
+
+- (BOOL)processTrack:(NSXMLElement *)trackElement intoHistoryEntry:(LHHistoryEntry **)outHistoryEntry;
 
 @property (readonly) NSString *username;
 

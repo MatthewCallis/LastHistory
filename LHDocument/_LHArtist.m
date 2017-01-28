@@ -14,7 +14,7 @@
 }
 
 - (LHArtistID*)objectID {
-	return (LHArtistID*)[super objectID];
+	return (LHArtistID*)super.objectID;
 }
 
 
@@ -74,13 +74,9 @@
 + (NSArray*)fetchArtistsWithName:(NSManagedObjectContext*)moc_ name:(NSString*)name_ error:(NSError**)error_ {
 	NSError *error = nil;
 	
-	NSManagedObjectModel *model = [[moc_ persistentStoreCoordinator] managedObjectModel];
+	NSManagedObjectModel *model = moc_.persistentStoreCoordinator.managedObjectModel;
 	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:@"artistsWithName"
-													 substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:
-														
-														name_, @"name",
-														
-														nil]
+													 substitutionVariables:@{@"name": name_}
 													 ];
 	NSAssert(fetchRequest, @"Can't find fetch request named \"artistsWithName\".");
 	

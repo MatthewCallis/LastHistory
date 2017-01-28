@@ -14,7 +14,7 @@
 }
 
 - (LHHistoryEntryID*)objectID {
-	return (LHHistoryEntryID*)[super objectID];
+	return (LHHistoryEntryID*)super.objectID;
 }
 
 
@@ -25,12 +25,12 @@
 
 
 - (int)timeValue {
-	NSNumber *result = [self time];
-	return result ? [result intValue] : 0;
+	NSNumber *result = self.time;
+	return result ? result.intValue : 0;
 }
 
 - (void)setTimeValue:(int)value_ {
-	[self setTime:[NSNumber numberWithInt:value_]];
+	self.time = @(value_);
 }
 
 
@@ -50,12 +50,12 @@
 
 
 - (float)weightValue {
-	NSNumber *result = [self weight];
-	return result ? [result floatValue] : 0;
+	NSNumber *result = self.weight;
+	return result ? result.floatValue : 0;
 }
 
 - (void)setWeightValue:(float)value_ {
-	[self setWeight:[NSNumber numberWithFloat:value_]];
+	self.weight = @(value_);
 }
 
 

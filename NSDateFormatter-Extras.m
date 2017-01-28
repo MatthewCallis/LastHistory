@@ -15,13 +15,13 @@
 // or NSNotFound if the string does not represent a weekday
 - (NSUInteger)weekdayForString:(NSString *)token
 {
-	token = [token lowercaseString];
+	token = token.lowercaseString;
 	
 	// check short symbols
-	NSMutableArray *shortSymbols = [NSMutableArray arrayWithCapacity:[[self shortStandaloneWeekdaySymbols] count]];
-	for (NSString *symbol in [[self shortStandaloneWeekdaySymbols] valueForKey:@"lowercaseString"]) {
+	NSMutableArray *shortSymbols = [NSMutableArray arrayWithCapacity:self.shortStandaloneWeekdaySymbols.count];
+	for (NSString *symbol in [self.shortStandaloneWeekdaySymbols valueForKey:@"lowercaseString"]) {
 		if ([symbol hasSuffix:@"."])
-			symbol = [symbol substringToIndex:[symbol length]-1];
+			symbol = [symbol substringToIndex:symbol.length-1];
 		[shortSymbols addObject:symbol];
 	}
 	NSUInteger index = [shortSymbols indexOfObject:token];
@@ -29,10 +29,10 @@
 	// check long symbols
 	if (index == NSNotFound)
 	{
-		NSArray *symbols = [[self standaloneWeekdaySymbols] valueForKey:@"lowercaseString"];
+		NSArray *symbols = [self.standaloneWeekdaySymbols valueForKey:@"lowercaseString"];
 		// allow "s" suffix for full weekday somboly, e.g. "fridays"
 		if ([token hasSuffix:@"s"])
-			token = [token substringToIndex:[token length]-1];
+			token = [token substringToIndex:token.length-1];
 		index = [symbols indexOfObject:token];
 	}
 	
@@ -41,16 +41,16 @@
 
 - (NSUInteger)monthForString:(NSString *)token
 {
-	token = [token lowercaseString];
+	token = token.lowercaseString;
 	
 	// check short symbols
-	NSArray *shortSymbols = [[self shortStandaloneMonthSymbols] valueForKey:@"lowercaseString"];
+	NSArray *shortSymbols = [self.shortStandaloneMonthSymbols valueForKey:@"lowercaseString"];
 	NSUInteger index = [shortSymbols indexOfObject:token];
 	
 	// check long symbols
 	if (index == NSNotFound)
 	{
-		NSArray *symbols = [[self standaloneMonthSymbols] valueForKey:@"lowercaseString"];
+		NSArray *symbols = [self.standaloneMonthSymbols valueForKey:@"lowercaseString"];
 		index = [symbols indexOfObject:token];
 	}
 	

@@ -12,7 +12,7 @@
 
 @interface _LHArtist : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHArtistID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHArtistID *objectID;
 
 
 
@@ -30,12 +30,12 @@
 
 
 @property (nonatomic, retain) NSSet* albums;
-- (NSMutableSet*)albumsSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *albumsSet;
 
 
 
 @property (nonatomic, retain) NSSet* tracks;
-- (NSMutableSet*)tracksSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *tracksSet;
 
 
 

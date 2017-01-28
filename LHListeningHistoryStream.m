@@ -56,7 +56,7 @@
 	return [super defaultActionForKey:key];
 }
 
-- (id)initWithLayer:(id)layer
+- (instancetype)initWithLayer:(id)layer
 {
 	self = [super initWithLayer:layer];
 	if (self != nil) {
@@ -91,7 +91,7 @@
 	}
 	else if ([keyPath isEqualToString:@"currentHistoryEntry"]) // highlighting of current history entry
 	{
-		LHHistoryEntry *oldHistoryEntry = [change objectForKey:NSKeyValueChangeOldKey];
+		LHHistoryEntry *oldHistoryEntry = change[NSKeyValueChangeOldKey];
 		if (oldHistoryEntry && ![oldHistoryEntry isEqual:[NSNull null]])
 		{
 			// restore normal look of layer
@@ -101,7 +101,7 @@
 			layer.zPosition = kDefaultZ;
 		}
 		
-		LHHistoryEntry *newHistoryEntry = [change objectForKey:NSKeyValueChangeNewKey];
+		LHHistoryEntry *newHistoryEntry = change[NSKeyValueChangeNewKey];
 		if (newHistoryEntry && ![newHistoryEntry isEqual:[NSNull null]])
 		{
 			// visibly mark playing song
@@ -111,7 +111,7 @@
 			
 			float scale = MAX([[layer valueForKeyPath:@"transform.scale"] floatValue], 1.0);
 			CABasicAnimation *pulseAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-			pulseAnimation.fromValue = [NSNumber numberWithFloat:scale];
+			pulseAnimation.fromValue = @(scale);
 			pulseAnimation.toValue = [NSNumber numberWithFloat:scale * 1.5];
 			pulseAnimation.duration = 1.0;
 			pulseAnimation.autoreverses = YES;
@@ -147,10 +147,10 @@
 		[self insertObject:historyEntry];
 		
 		if ((++processedCount % 5000) == 0)
-			NSLog(@"Processed %u history entry nodes", processedCount);
+			NSLog(@"Processed %lu history entry nodes", (unsigned long)processedCount);
 	}
 	
-	NSLog(@"Generated %u history entry nodes", processedCount);
+	NSLog(@"Generated %lu history entry nodes", (unsigned long)processedCount);
 }
 
 - (void)layoutSublayers
@@ -271,9 +271,9 @@
 	NSArray *otherPlaylist = [otherEntries valueForKey:@"track"];
 	
 	// loop through other playlist and try to find match
-	for (NSUInteger i = 0; i < [otherEntries count]; i++)
+	for (NSUInteger i = 0; i < otherEntries.count; i++)
 	{
-		LHHistoryEntry *otherPlaylistEntry = [otherEntries objectAtIndex:i];
+		LHHistoryEntry *otherPlaylistEntry = otherEntries[i];
 		NSUInteger playlistIndex = [playlist indexOfObject:otherPlaylistEntry.track];
 		
 		if (playlistIndex != NSNotFound
@@ -281,7 +281,7 @@
 			&& i == [otherPlaylist indexOfObject:otherPlaylistEntry.track]) // don't connect same track more than once
 		{
 			//NSLog(@"%u = %u: %@", i, playlistIndex, track.displayName);
-			LHHistoryEntry *connectedEntry = [entries objectAtIndex:playlistIndex];
+			LHHistoryEntry *connectedEntry = entries[playlistIndex];
 
 			[self addLineFrom:connectedEntry to:otherPlaylistEntry toPath:_playlistPath];
 		}
@@ -307,7 +307,7 @@
 		if (newLayer) {
 			LHHistoryEntry *newEntry = [newLayer valueForKey:LAYER_DATA_KEY];
 			
-			NSArray *playlists = [newEntry playlists];
+			NSArray *playlists = newEntry.playlists;
 			
 			// fetch own playlist, stopping at gaps
 			NSArray *entriesFwd = [newEntry adjacentEntriesInPlaylists:playlists ascending:YES];
@@ -385,7 +385,7 @@
 - (void)mouseMoved:(NSEvent *)theEvent onLayer:(CALayer *)hitLayer
 {
 	// ignore mouse-moved when shift key is pressed
-	if (!([theEvent modifierFlags] & NSShiftKeyMask))
+	if (!(theEvent.modifierFlags & NSShiftKeyMask))
 	{
 		CALayer *node = nil;
 		id hitData = [hitLayer valueForKey:LAYER_DATA_KEY];
@@ -416,21 +416,19 @@
 {
 	static NSArray *genreColors = nil;
 	if (!genreColors) {
-		genreColors = [NSArray arrayWithObjects:
-							 [NSColor colorWithCalibratedHue:0.084 saturation:1.0 brightness:1.0 alpha:1.0],
+		genreColors = @[[NSColor colorWithCalibratedHue:0.084 saturation:1.0 brightness:1.0 alpha:1.0],
 							 [NSColor colorWithCalibratedHue:0.167 saturation:1.0 brightness:1.0 alpha:1.0],
 							 [NSColor colorWithCalibratedHue:0.333 saturation:1.0 brightness:1.0 alpha:1.0],
 							 [NSColor colorWithCalibratedHue:0.500 saturation:1.0 brightness:1.0 alpha:1.0],
 							 [NSColor colorWithCalibratedHue:0.667 saturation:1.0 brightness:1.0 alpha:1.0],
 							 [NSColor colorWithCalibratedHue:0.790 saturation:1.0 brightness:1.0 alpha:1.0],
-							 [NSColor colorWithCalibratedHue:0.916 saturation:1.0 brightness:1.0 alpha:1.0],
-							 nil];
+							 [NSColor colorWithCalibratedHue:0.916 saturation:1.0 brightness:1.0 alpha:1.0]];
 	}
 	static NSColor *genreColorUnknown = nil;
 	if (!genreColorUnknown)
 		genreColorUnknown = [NSColor colorWithCalibratedWhite:.5 alpha:0.5];
 	
-	id result = [_nodeImages objectForKey:label];
+	id result = _nodeImages[label];
 	if (!result)
 	{
 		NSColor *color;
@@ -440,8 +438,8 @@
 			color = genreColorUnknown;
 		} else { // default
 			NSUInteger genreIndex = [LHTrack genreIndexForGenre:label];
-			if (genreIndex < [genreColors count]) {
-				color = [genreColors objectAtIndex:genreIndex];
+			if (genreIndex < genreColors.count) {
+				color = genreColors[genreIndex];
 			} else {
 				NSLog(@"Unknown node color for label: %@", label);
 				color = genreColorUnknown;
@@ -453,11 +451,11 @@
 		[color setFill];
 		[[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(0.0, 0.0, NODE_BASE_SIZE, NODE_BASE_SIZE)] fill];
 		[nodeImage unlockFocus];
-		result = (id)[nodeImage cgImage];
+		result = (id)nodeImage.cgImage;
 		
 		if (!_nodeImages)
 			_nodeImages = [NSMutableDictionary dictionaryWithCapacity:10];
-		[_nodeImages setObject:result forKey:label];
+		_nodeImages[label] = result;
 	}
 	
 	return result;
@@ -467,7 +465,7 @@
 {
 	float weightFactor = MAX(NODE_MIN_WEIGHT, MIN(NODE_MAX_WEIGHT, self.view.showHistoryEntryWeights ? [historyEntry weightValue] : NODE_BASE_WEIGHT));
 	weightFactor *= self.view.nodeScaleFactor;
-	[historyEntry.layer setValue:[NSNumber numberWithFloat:weightFactor] forKeyPath:@"transform.scale"];
+	[historyEntry.layer setValue:@(weightFactor) forKeyPath:@"transform.scale"];
 }
 
 @end

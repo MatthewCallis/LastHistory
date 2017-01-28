@@ -47,17 +47,17 @@
 @synthesize caption=_caption;
 @synthesize timestamp=_timestamp;
 
-- (id)initWithDictionary:(NSDictionary *)imageDict inRoll:(LHiPhotoRoll *)roll
+- (instancetype)initWithDictionary:(NSDictionary *)imageDict inRoll:(LHiPhotoRoll *)roll
 {
 	self = [super init];
 	if (self != nil) {
 		_roll = roll;
 		
-		_caption = [imageDict objectForKey:@"Caption"];
-		_timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[[imageDict objectForKey:@"DateAsTimerInterval"] floatValue]];
+		_caption = imageDict[@"Caption"];
+		_timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[imageDict[@"DateAsTimerInterval"] floatValue]];
 		
-		_imagePath = [imageDict objectForKey:@"ImagePath"];
-		_thumbPath = [imageDict objectForKey:@"ThumbPath"];
+		_imagePath = imageDict[@"ImagePath"];
+		_thumbPath = imageDict[@"ThumbPath"];
 	}
 	return self;
 }

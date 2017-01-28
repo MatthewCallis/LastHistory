@@ -14,10 +14,10 @@
 
 #define SURVEY_ASK				1
 #define SURVEY_MIN_USAGE_TIME	10*60 // seconds
-#define SURVEY_URL				@"http://www.frederikseiffert.de/lasthistory/survey"
+#define SURVEY_URL				@"https://www.frederikseiffert.de/lasthistory/survey"
 #define SURVEY_ASKED_DEFAULT	@"SurveyAsked"
 
-#define WEBSITE_URL				@"http://www.frederikseiffert.de/lasthistory"
+#define WEBSITE_URL				@"https://www.frederikseiffert.de/lasthistory"
 
 #define LF_API_KEY @"fbc78d2f82dbb5f20ce6dff0dad331f1"
 #define LF_SECRET @"4aa601de9f102d69361eeacd4c9632c7"
@@ -82,8 +82,8 @@
 
 - (NSMenu *)recentDocumentsMenu
 {
-	NSArray *recentDocuments = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
-	if (![recentDocuments count])
+	NSArray *recentDocuments = [NSDocumentController sharedDocumentController].recentDocumentURLs;
+	if (!recentDocuments.count)
 		return nil;
 	
 	NSMenu *menu = [[NSMenu allocWithZone:[NSMenu menuZone]] initWithTitle:@""];
@@ -92,22 +92,22 @@
 	// add recent documents
 	for (NSURL *url in recentDocuments)
 	{
-		NSString *title = [[[url path] lastPathComponent] stringByDeletingPathExtension];
+		NSString *title = url.path.lastPathComponent.stringByDeletingPathExtension;
 		NSMenuItem *recentItem = [menu addItemWithTitle:title action:@selector(openRecentItem:) keyEquivalent:@""];
-		[recentItem setTarget:self];
-		[recentItem setRepresentedObject:url];
+		recentItem.target = self;
+		recentItem.representedObject = url;
 		
-		NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFile:[url path]];
+		NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFile:url.path];
 		if (icon) {
-			[icon setSize:NSMakeSize(16, 16)];
-			[recentItem setImage:icon];
+			icon.size = NSMakeSize(16, 16);
+			recentItem.image = icon;
 		}
 	}
 	
 	// add "open document" item
 	[menu addItem:[NSMenuItem separatorItem]];
 	NSMenuItem *openItem = [menu addItemWithTitle:NSLocalizedString(@"Open...", nil) action:@selector(openDocument:) keyEquivalent:@""];
-	[openItem setTarget:[NSDocumentController sharedDocumentController]];
+	openItem.target = [NSDocumentController sharedDocumentController];
 	
 	return menu;
 }
@@ -123,12 +123,12 @@
 
 - (IBAction)showWelcomeWindow:(id)sender
 {
-	if (![welcomeWindow isVisible])
+	if (!welcomeWindow.visible)
 	{
 		NSMenu *recentMenu = [self recentDocumentsMenu];
-		[recentDocumentsButton setHidden:(recentMenu == nil)];
+		recentDocumentsButton.hidden = (recentMenu == nil);
 		if (recentMenu)
-			[recentDocumentsButton setMenu:recentMenu];
+			recentDocumentsButton.menu = recentMenu;
 
 		[welcomeWindow center];
 		[welcomeWindow makeKeyAndOrderFront:nil];
@@ -142,7 +142,7 @@
 	{
 		self.busy = YES;
 		
-		NSString *username = [usernameField stringValue];
+		NSString *username = usernameField.stringValue;
 		
 		// check Last.fm profile
 		NSError *error = nil;
@@ -173,8 +173,8 @@ fail:
 
 - (void)documentWillOpen:(NSNotification *)sender
 {
-	NSArray *documents = [[NSDocumentController sharedDocumentController] documents];
-	if ([documents count] == 0)
+	NSArray *documents = [NSDocumentController sharedDocumentController].documents;
+	if (documents.count == 0)
 		[self showWelcomeWindow:nil];
 	
 	self.busy = YES;
@@ -182,8 +182,8 @@ fail:
 
 - (void)documentDidClose:(NSNotification *)sender
 {
-	NSArray *documents = [[NSDocumentController sharedDocumentController] documents];
-	if ([documents count] == 0)
+	NSArray *documents = [NSDocumentController sharedDocumentController].documents;
+	if (documents.count == 0)
 		[self showWelcomeWindow:nil];
 }
 
@@ -194,7 +194,7 @@ fail:
 	
 	if (!webService.isAuthenticated)
 	{
-		NSURL *authURL = [webService authenticateGetAuthorizationURL];
+		NSURL *authURL = webService.authenticateGetAuthorizationURL;
 		if (authURL)
 		{
 			[[NSWorkspace sharedWorkspace] openURL:authURL];
@@ -203,7 +203,7 @@ fail:
 																 NSLocalizedString(@"Continue", nil),
 																 NSLocalizedString(@"Cancel", nil),
 																 nil);
-			if (alertResult == NSAlertDefaultReturn && [webService authenticateFinish])
+			if (alertResult == NSAlertDefaultReturn && webService.authenticateFinish)
 			{
 				// save session in user defaults
 				NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -248,7 +248,7 @@ fail:
 	[params setValue:username forKey:@"user"];
 	[params setValue:@"1" forKey:@"limit"];
 	if (webService.userName)
-		[params setObject:webService.userName forKey:@"username"];
+		params[@"username"] = webService.userName;
 	
 	NSError *error = nil;
 	if (![webService callMethod:@"user.getRecentTracks" withParameters:params error:&error])

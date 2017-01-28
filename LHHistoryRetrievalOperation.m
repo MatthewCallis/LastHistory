@@ -24,7 +24,7 @@
 
 @synthesize username=_username;
 
-- (id)initWithDocument:(LHDocument *)document andUsername:(NSString *)username
+- (instancetype)initWithDocument:(LHDocument *)document andUsername:(NSString *)username
 {
 	self = [super initWithDocument:document];
 	if (self != nil) {
@@ -37,14 +37,14 @@
 {
 	NSManagedObjectContext *context = self.context;
 	
-	NSString *trackName = [[[trackElement elementsForName:@"name"] lastObject] stringValue];
-	NSInteger timestamp = [[[[[trackElement elementsForName:@"date"] lastObject] attributeForName:@"uts"] stringValue] integerValue];
+	NSString *trackName = [trackElement elementsForName:@"name"].lastObject.stringValue;
+	NSInteger timestamp = [[trackElement elementsForName:@"date"].lastObject attributeForName:@"uts"].stringValue.integerValue;
 	
 	if (trackName.length > 0 && timestamp != 0)
 	{
 		// check for first last history entry
-		if (timestamp == [_firstHistoryEntry.timestamp timeIntervalSince1970] ||
-			timestamp == [_lastHistoryEntry.timestamp timeIntervalSince1970])
+		if (timestamp == (_firstHistoryEntry.timestamp).timeIntervalSince1970 ||
+			timestamp == (_lastHistoryEntry.timestamp).timeIntervalSince1970)
 		{
 			NSLog(@"Reached first existing or last history entry.");
 			return NO;
@@ -52,27 +52,27 @@
 		
 		// find or create artist
 		LHArtist *artist = nil;
-		NSXMLElement *artistElement = [[trackElement elementsForName:@"artist"] lastObject];
-		NSString *artistName = [artistElement stringValue];
+		NSXMLElement *artistElement = [trackElement elementsForName:@"artist"].lastObject;
+		NSString *artistName = artistElement.stringValue;
 		if (artistName.length > 0) {
-			artist = [[LHArtist fetchArtistsWithName:context name:artistName] lastObject];
+			artist = [LHArtist fetchArtistsWithName:context name:artistName].lastObject;
 			if (!artist) {
 				artist = [[LHArtist alloc] initWithEntity:_artistEntity insertIntoManagedObjectContext:context];
 				artist.name = artistName;
 				
-				NSString *mbid = [[artistElement attributeForName:@"mbid"] stringValue];
+				NSString *mbid = [artistElement attributeForName:@"mbid"].stringValue;
 				if (mbid.length > 0)
 					artist.mbid = mbid;
 			}
 		}
 		
-		LHTrack *track = [[LHTrack fetchTracksWithNameAndArtist:context name:trackName artist:artist] lastObject];
+		LHTrack *track = [LHTrack fetchTracksWithNameAndArtist:context name:trackName artist:artist].lastObject;
 		if (!track) {
 			track = [[LHTrack alloc] initWithEntity:_trackEntity insertIntoManagedObjectContext:context];
 			track.name = trackName;
 			track.artist = artist;
 			
-			NSString *mbid = [[[trackElement elementsForName:@"mbid"] lastObject] stringValue];
+			NSString *mbid = [trackElement elementsForName:@"mbid"].lastObject.stringValue;
 			if (mbid.length > 0)
 				track.mbid = mbid;
 		}
@@ -80,20 +80,20 @@
 		// find or create album
 		LHAlbum *album = track.album;
 		if (!album) {
-			NSXMLElement *albumElement = [[trackElement elementsForName:@"album"] lastObject];
-			NSString *albumName = [albumElement stringValue];
+			NSXMLElement *albumElement = [trackElement elementsForName:@"album"].lastObject;
+			NSString *albumName = albumElement.stringValue;
 			if (albumName.length > 0) {
-				album = [[LHAlbum fetchAlbumsWithNameAndArtist:context name:albumName artist:artist] lastObject];
+				album = [LHAlbum fetchAlbumsWithNameAndArtist:context name:albumName artist:artist].lastObject;
 				if (!album) {
 					album = [[LHAlbum alloc] initWithEntity:_albumEntity insertIntoManagedObjectContext:context];
 					album.name = albumName;
 					album.artist = artist;
 					
-					NSString *mbid = [[albumElement attributeForName:@"mbid"] stringValue];
+					NSString *mbid = [albumElement attributeForName:@"mbid"].stringValue;
 					if (mbid.length > 0)
 						album.mbid = mbid;
 					
-					NSString *imagePath = [[[trackElement nodesForXPath:@"image[@size='large']" error:nil] lastObject] stringValue];
+					NSString *imagePath = [trackElement nodesForXPath:@"image[@size='large']" error:nil].lastObject.stringValue;
 					if (imagePath.length > 0)
 						album.imagePath = imagePath;
 				}
@@ -123,7 +123,7 @@
 	NSManagedObjectContext *context = self.context;
 	
 	// fetch or create user
-	LHUser *user = [[LHUser fetchUsersWithName:context name:self.username] lastObject];
+	LHUser *user = [LHUser fetchUsersWithName:context name:self.username].lastObject;
 	if (!user) {
 		user = [LHUser insertInManagedObjectContext:context];
 		user.name = self.username;
@@ -137,14 +137,14 @@
 	_albumEntity = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:context];
 	_artistEntity = [NSEntityDescription entityForName:@"Artist" inManagedObjectContext:context];
 	
-	LFWebService *webService = [[NSApp delegate] lfWebService];
+	LFWebService *webService = (id)[NSApp.delegate lfWebService];
 	NSAssert(webService, @"No web service");
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:4];
 	[params setValue:_user.name	forKey:@"user"];
 	[params setValue:@"100"	forKey:@"limit"];
 	if (webService.userName)
-		[params setObject:webService.userName forKey:@"username"];
+		params[@"username"] = webService.userName;
 	
 	NSUInteger page = 0;
 	NSUInteger totalPages = NSUIntegerMax;
@@ -152,46 +152,46 @@
 	BOOL abort = NO;
 	while (!abort && page < totalPages)
 	{
-		if ([self isCancelled]) {
+		if (self.cancelled) {
 			[context rollback];
 			return;
 		}
 		
 		// fetch page
-		[params setValue:[NSString stringWithFormat:@"%u", ++page] forKey:@"page"];
+		[params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)++page] forKey:@"page"];
 		
 		NSError *error = nil;
 		NSXMLDocument *pageXML = [webService callMethod:@"user.getRecentTracks" withParameters:params error:&error];
 		if (!pageXML && error)
 			[self.document presentError:error];
 		
-		NSXMLElement *container = [[pageXML.rootElement elementsForName:@"recenttracks"] lastObject];
+		NSXMLElement *container = [pageXML.rootElement elementsForName:@"recenttracks"].lastObject;
 		
 		if (page == 1)
 		{
-			totalPages = [[[container attributeForName:@"totalPages"] stringValue] integerValue];
+			totalPages = [container attributeForName:@"totalPages"].stringValue.integerValue;
 		
 			if (self.document.historyEntriesCount == 0) {
 				// get last history entry to define timespan
-				[params setValue:[NSString stringWithFormat:@"%u", totalPages] forKey:@"page"];
+				[params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)totalPages] forKey:@"page"];
 				NSXMLDocument *lastPageXML = [webService callMethod:@"user.getRecentTracks" withParameters:params error:&error];
 				if (!lastPageXML)
 				{
 					// try once more if "Error fetching recent tracks" from Last.fm
-					if ([error code] == 8)
+					if (error.code == 8)
 						lastPageXML = [webService callMethod:@"user.getRecentTracks" withParameters:params error:&error];
 					if (!lastPageXML && error)
 						[self.document presentError:error];
 				}
 				
-				NSXMLElement *lastTrack = [[[[lastPageXML.rootElement elementsForName:@"recenttracks"] lastObject] children] lastObject];
+				NSXMLElement *lastTrack = [lastPageXML.rootElement elementsForName:@"recenttracks"].lastObject.children.lastObject;
 				[self processTrack:lastTrack intoHistoryEntry:&_firstHistoryEntry];
 			}
 		}
 		
 //		NSLog(@"Page %u of %u", page, totalPages);
 		
-		for (NSXMLElement *trackElement in [container children]) {
+		for (NSXMLElement *trackElement in container.children) {
 			abort = ![self processTrack:trackElement intoHistoryEntry:nil];
 			if (abort)
 				break;
@@ -201,14 +201,14 @@
 		self.progressIndeterminate = NO;
 		
 		if ((page % PROCESS_CHUNK_SIZE) == 0 || page == 1) { // save every 10 pages, and after first page to setup view
-			if (![self saveContext])
+			if (!self.saveContext)
 				return;
 			
 //			NSLog(@"Retrieved %u listening history pages", page);
 		}
 	}
 	
-	[self saveContext];
+	self.saveContext;
 	
 	NSLog(@"Finished retrieving listening history");
 }

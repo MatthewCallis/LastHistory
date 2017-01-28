@@ -6,10 +6,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-CGImageRef CreateCGImageFromData(NSData* data);
+CGImageRef CreateCGImageFromData(NSData* data) CF_RETURNS_RETAINED;
 
 @interface NSImage (Extras)
 
-- (CGImageRef)cgImage;
+@property (NS_NONATOMIC_IOSONLY, readonly) CGImageRef cgImage;
 
 @end

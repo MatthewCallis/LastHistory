@@ -12,10 +12,7 @@
 
 - (CGImageRef)cgImage
 {
-	CGImageRef image = CreateCGImageFromData([self TIFFRepresentation]);
-	if (image)
-		CFMakeCollectable(image);
-	
+	CGImageRef image = CreateCGImageFromData(self.TIFFRepresentation);
 	return image;
 }
 
@@ -30,8 +27,7 @@ CGImageRef CreateCGImageFromData(NSData* data)
 
     sourceRef = CGImageSourceCreateWithData((CFDataRef)data, NULL);
     if(sourceRef) {
-		NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO]
-															forKey:(NSString *)kCGImageSourceShouldCache];
+		NSDictionary *options = @{(NSString *)kCGImageSourceShouldCache: @NO};
         imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (CFDictionaryRef)options);
         CFRelease(sourceRef);
     }

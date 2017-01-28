@@ -12,7 +12,7 @@
 
 
 @interface LHOperation : NSOperation {
-	LHDocument __weak *_document;
+	LHDocument *_document;
 	NSManagedObjectContext *_context;
 	
 	NSString *_progressMessage;
@@ -20,15 +20,15 @@
 	BOOL _progressIndeterminate;
 }
 
-@property (readonly) LHDocument __weak *document;
+@property (readonly) LHDocument *document;
 @property (readonly) NSManagedObjectContext *context;
 
 @property (retain) NSString *progressMessage;
 @property (assign) float progress;
 @property (assign) BOOL progressIndeterminate;
 
-- (id)initWithDocument:(LHDocument *)document;
+- (instancetype)initWithDocument:(LHDocument *)document NS_DESIGNATED_INITIALIZER;
 
-- (BOOL)saveContext;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL saveContext;
 
 @end

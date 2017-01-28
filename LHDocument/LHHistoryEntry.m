@@ -25,14 +25,14 @@
 - (NSAttributedString *)attributedDisplayName
 {
 	NSDateFormatter *outputFormatter = [NSDateFormatter new];
-	[outputFormatter setDateStyle:NSDateFormatterMediumStyle];
-	[outputFormatter setTimeStyle:NSDateFormatterMediumStyle];
+	outputFormatter.dateStyle = NSDateFormatterMediumStyle;
+	outputFormatter.timeStyle = NSDateFormatterMediumStyle;
 	NSString *dateString = [outputFormatter stringFromDate:self.timestamp];
 	
 	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@: %@", dateString, self.track.displayName]
 																			   attributes:nil];
 	[result beginEditing];
-	[result setAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSColor darkGrayColor], NSForegroundColorAttributeName, nil]
+	[result setAttributes:@{NSForegroundColorAttributeName: [NSColor darkGrayColor]}
 					range:NSMakeRange(0, dateString.length+1)];
 	[result endEditing];
 	
@@ -43,24 +43,24 @@
 - (NSArray *)adjacentEntries:(NSUInteger)numEntries ascending:(BOOL)ascending
 {
 	NSFetchRequest *request = [NSFetchRequest new];
-	[request setEntity:self.entity];
-	[request setFetchLimit:numEntries];
+	request.entity = self.entity;
+	request.fetchLimit = numEntries;
 	
 	NSString *predicateString = [NSString stringWithFormat:@"timestamp %@ %%@", ascending ? @">" : @"<"];
-	[request setPredicate:[NSPredicate predicateWithFormat:predicateString, self.timestamp]];
+	request.predicate = [NSPredicate predicateWithFormat:predicateString, self.timestamp];
 	
 	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:ascending];
-	[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+	request.sortDescriptors = @[sortDescriptor];
 	
 	NSError *error;
-	return [[self managedObjectContext] executeFetchRequest:request error:&error];
+	return [self.managedObjectContext executeFetchRequest:request error:&error];
 }
 
 // fetches all playlists within +/- 2 hours of all connected history entries
 - (NSArray *)playlists
 {
 	NSFetchRequest *request = [NSFetchRequest new];
-	[request setEntity:self.entity];
+	request.entity = self.entity;
 	
 	NSCalendar *calendar = [NSCalendar currentCalendar];
 	NSDateComponents *startDateComps = [NSDateComponents new];
@@ -69,7 +69,7 @@
 	endDateComps.hour = PLAYLIST_HOURS_RANGE/2;
 	
 	NSSet *connectedEntries = self.track.historyEntries;
-	NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:[connectedEntries count]];
+	NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:connectedEntries.count];
 	
 	for (LHHistoryEntry *entry in connectedEntries)
 	{
@@ -79,10 +79,10 @@
 		[predicates addObject:predicate];
 	}
 	
-	[request setPredicate:[NSCompoundPredicate orPredicateWithSubpredicates:predicates]];
+	request.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
 	
 	NSError *error;
-	return [[self managedObjectContext] executeFetchRequest:request error:&error];
+	return [self.managedObjectContext executeFetchRequest:request error:&error];
 }
 
 // returns the adjacent playlists entries for a given playlists array
@@ -92,13 +92,13 @@
 	NSArray *result = [playlists filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:predicateString, self.timestamp]];
 	
 	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timestamp" ascending:ascending];
-	result = [result sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+	result = [result sortedArrayUsingDescriptors:@[sortDescriptor]];
 	
 	// stop adjacent entries at playlist gap
-	for (NSUInteger i = 0; i < [result count]; i++)
+	for (NSUInteger i = 0; i < result.count; i++)
 	{
-		LHHistoryEntry *previousEntry = i == 0 ? self : [result objectAtIndex:i-1];
-		LHHistoryEntry *entry = [result objectAtIndex:i];
+		LHHistoryEntry *previousEntry = i == 0 ? self : result[i-1];
+		LHHistoryEntry *entry = result[i];
 		if (!ascending)
 			swap((void *)&previousEntry, (void *)&entry);
 		if ([entry.timestamp timeIntervalSinceDate:previousEntry.timestamp] > PLAYLIST_GAP_SECONDS) {
@@ -113,12 +113,12 @@
 
 - (LHHistoryEntry *)previousEntry
 {
-	return [[self adjacentEntries:1 ascending:NO] lastObject];
+	return [self adjacentEntries:1 ascending:NO].lastObject;
 }
 
 - (LHHistoryEntry *)nextEntry
 {
-	return [[self adjacentEntries:1 ascending:YES] lastObject];
+	return [self adjacentEntries:1 ascending:YES].lastObject;
 }
 
 
@@ -126,35 +126,35 @@
 {
 	// cache day for performance reasons (used for every repositioning nodes)
 	if (!_day)
-		_day = [self.timestamp day];
+		_day = (self.timestamp).day;
 	return _day;
 }
 
 - (NSInteger)year
 {
 	if (!_year)
-		_year = [self.timestamp year];
+		_year = (self.timestamp).year;
 	return _year;
 }
 
 - (NSInteger)month
 {
 	if (!_month)
-		_month = [self.timestamp month];
+		_month = (self.timestamp).month;
 	return _month;
 }
 
 - (NSInteger)hour
 {
 	if (!_hour)
-		_hour = [self.timestamp hour];
+		_hour = (self.timestamp).hour;
 	return _hour;
 }
 
 - (NSInteger)weekday
 {
 	if (!_weekday)
-		_weekday = [self.timestamp weekday];
+		_weekday = (self.timestamp).weekday;
 	return _weekday;
 }
 
@@ -168,7 +168,7 @@
 	NSCalendar *calendar = [NSCalendar currentCalendar];
 	NSDateComponents *comps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit)
 										  fromDate:timestamp];
-	[self setTimeValue:comps.hour*60*60 + comps.minute*60 + comps.second];
+	self.timeValue = comps.hour*60*60 + comps.minute*60 + comps.second;
 	
 	_day = nil;
 }

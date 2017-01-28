@@ -9,7 +9,7 @@
 
 - (NSImage *)image
 {
-	return [[[NSImage alloc] initByReferencingURL:[NSURL URLWithString:self.imagePath]] autorelease];
+	return [[NSImage alloc] initByReferencingURL:[NSURL URLWithString:self.imagePath]];
 }
 
 @end

@@ -12,7 +12,7 @@
 
 @interface _LHHistoryEntry : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHHistoryEntryID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHHistoryEntryID *objectID;
 
 
 

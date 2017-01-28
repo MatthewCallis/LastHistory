@@ -14,7 +14,7 @@
 
 @interface _LHTrack : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHTrackID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHTrackID *objectID;
 
 
 
@@ -32,7 +32,7 @@
 
 
 @property (nonatomic, retain) NSSet* trackTags;
-- (NSMutableSet*)trackTagsSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *trackTagsSet;
 
 
 
@@ -47,7 +47,7 @@
 
 
 @property (nonatomic, retain) NSSet* historyEntries;
-- (NSMutableSet*)historyEntriesSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *historyEntriesSet;
 
 
 

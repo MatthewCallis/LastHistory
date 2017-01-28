@@ -29,7 +29,7 @@
 	return [CalEvent class];
 }
 
-- (id)initWithLayer:(id)layer
+- (instancetype)initWithLayer:(id)layer
 {
 	self = [super initWithLayer:layer];
 	if (self != nil) {
@@ -61,7 +61,7 @@
 		CALayer *layer = [CALayer layer];
 		[layer setValue:event forKey:LAYER_DATA_KEY];
 		layer.anchorPoint = CGPointMake(0, 0);
-		layer.backgroundColor = [event.calendar.color cgColor];
+		layer.backgroundColor = (event.calendar.color).cgColor;
 		
 		[self addSublayer:layer];
 		processedCount++;
@@ -69,7 +69,7 @@
 	
 	[self layoutSublayers];
 	
-	NSLog(@"Generated %u calendar nodes", processedCount);
+	NSLog(@"Generated %lu calendar nodes", (unsigned long)processedCount);
 }
 
 - (void)layoutSublayers
@@ -101,6 +101,7 @@
 
 - (NSArray *)calendarEvents
 {
+    return nil;
 	if (!_calendarEvents)
 	{
 		NSDate *startDate = self.view.document.firstHistoryEntry.timestamp;
@@ -120,7 +121,7 @@
 		
 		NSDate *batchStartDate = startDate;
 		NSDate *batchEndDate = nil;
-		NSArray *events = [NSArray array];
+		NSArray *events = @[];
 		
 		do {
 			batchEndDate = [calendar dateByAddingComponents:fourYears toDate:batchStartDate options:0];

@@ -14,7 +14,7 @@
 }
 
 - (LHUserID*)objectID {
-	return (LHUserID*)[super objectID];
+	return (LHUserID*)super.objectID;
 }
 
 
@@ -56,13 +56,9 @@
 + (NSArray*)fetchUsersWithName:(NSManagedObjectContext*)moc_ name:(NSString*)name_ error:(NSError**)error_ {
 	NSError *error = nil;
 	
-	NSManagedObjectModel *model = [[moc_ persistentStoreCoordinator] managedObjectModel];
+	NSManagedObjectModel *model = moc_.persistentStoreCoordinator.managedObjectModel;
 	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:@"usersWithName"
-													 substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:
-														
-														name_, @"name",
-														
-														nil]
+													 substitutionVariables:@{@"name": name_}
 													 ];
 	NSAssert(fetchRequest, @"Can't find fetch request named \"usersWithName\".");
 	

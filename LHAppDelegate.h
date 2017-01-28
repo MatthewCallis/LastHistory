@@ -10,6 +10,12 @@
 
 @class LFWebService;
 
+@protocol LFWebServiceDelegateDataSource <NSObject>
+
+@property (readonly, strong) LFWebService *lfWebService;
+
+@end
+
 @interface LHAppDelegate : NSObject {
 	IBOutlet NSWindow *welcomeWindow;
 	IBOutlet NSTextField *usernameField;
@@ -22,7 +28,7 @@
 
 @property (assign) BOOL busy;
 
-@property (readonly) LFWebService *lfWebService;
+@property (strong, atomic) LFWebService *lfWebService;
 
 - (IBAction)showWelcomeWindow:(id)sender;
 - (IBAction)closeWelcomeWindow:(id)sender;
@@ -33,5 +39,7 @@
 - (IBAction)lfAuthenticate:(id)sender;
 
 - (BOOL)lfCheckUsername:(NSString *)username error:(NSError **)outError;
+
+- (LFWebService *)lfWebService;
 
 @end

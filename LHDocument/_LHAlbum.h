@@ -12,7 +12,7 @@
 
 @interface _LHAlbum : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHAlbumID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHAlbumID *objectID;
 
 
 
@@ -41,7 +41,7 @@
 
 
 @property (nonatomic, retain) NSSet* tracks;
-- (NSMutableSet*)tracksSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *tracksSet;
 
 
 

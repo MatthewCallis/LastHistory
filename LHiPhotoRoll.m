@@ -53,17 +53,17 @@
 @synthesize name=_name;
 @synthesize timestamp=_timestamp;
 
-- (id)initWithDictionary:(NSDictionary *)rollDict forLibrary:(LHiPhotoLibrary *)library
+- (instancetype)initWithDictionary:(NSDictionary *)rollDict forLibrary:(LHiPhotoLibrary *)library
 {
 	self = [super init];
 	if (self != nil) {
 		_library = library;
 		
-		_name = [rollDict objectForKey:@"RollName"];
-		_timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[[rollDict objectForKey:@"RollDateAsTimerInterval"] floatValue]];
+		_name = rollDict[@"RollName"];
+		_timestamp = [NSDate dateWithTimeIntervalSinceReferenceDate:[rollDict[@"RollDateAsTimerInterval"] floatValue]];
 		
-		_keyPhotoKey = [rollDict objectForKey:@"KeyPhotoKey"];
-		_photoKeys = [rollDict objectForKey:@"KeyList"];
+		_keyPhotoKey = rollDict[@"KeyPhotoKey"];
+		_photoKeys = rollDict[@"KeyList"];
 	}
 	return self;
 }
@@ -96,7 +96,7 @@
 	if (_photoKeys.count == 0)
 		return nil;
 		
-	LHiPhotoPhoto *firstPhoto = [self.library imageForKey:[_photoKeys objectAtIndex:0] inRoll:self];
+	LHiPhotoPhoto *firstPhoto = [self.library imageForKey:_photoKeys[0] inRoll:self];
 	return firstPhoto.timestamp;
 }
 
@@ -105,7 +105,7 @@
 	if (_photoKeys.count == 0)
 		return nil;
 	
-	LHiPhotoPhoto *lastPhoto = [self.library imageForKey:[_photoKeys lastObject] inRoll:self];
+	LHiPhotoPhoto *lastPhoto = [self.library imageForKey:_photoKeys.lastObject inRoll:self];
 	return lastPhoto.timestamp;
 }
 

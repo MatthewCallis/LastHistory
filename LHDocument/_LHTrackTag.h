@@ -12,7 +12,7 @@
 
 @interface _LHTrackTag : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHTrackTagID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHTrackTagID *objectID;
 
 
 

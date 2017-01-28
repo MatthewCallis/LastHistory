@@ -35,7 +35,7 @@
 - (NSString *)trackID
 {
 	// artist & name, always lowercase
-	return [self.displayName lowercaseString];
+	return (self.displayName).lowercaseString;
 }
 
 - (NSUInteger)trackCount
@@ -45,8 +45,8 @@
 
 - (NSArray *)sortedTrackTags
 {
-	NSSortDescriptor *sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"count" ascending:NO] autorelease];
-	return [[self.trackTags allObjects] sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+	NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"count" ascending:NO];
+	return [(self.trackTags).allObjects sortedArrayUsingDescriptors:@[sortDescriptor]];
 }
 
 - (NSString *)tagsStringWrappedAt:(NSUInteger)numWrapChars
@@ -58,7 +58,7 @@
 	{
 		NSString *string = [NSString stringWithFormat:@"%@ (%@) ", trackTag.tag.name, trackTag.count];
 		[result appendString:string];
-		numChars += [string length];
+		numChars += string.length;
 		
 		if (numWrapChars > 0 && numChars > numWrapChars) {
 			[result appendString:@"\n"];
@@ -83,14 +83,14 @@
 		// find best-matching genre for track tags
 		for (LHTrackTag *trackTag in self.sortedTrackTags)
 		{
-			NSString *tagName = [trackTag.tag.name lowercaseString];
+			NSString *tagName = (trackTag.tag.name).lowercaseString;
 			
-			for (NSUInteger i = 0; i < [genreTagsMappings count]; i++)
+			for (NSUInteger i = 0; i < genreTagsMappings.count; i++)
 			{
-				NSDictionary *mapping = [genreTagsMappings objectAtIndex:i];
+				NSDictionary *mapping = genreTagsMappings[i];
 				
-				if ([[mapping objectForKey:@"tags"] containsObject:tagName]) {
-					_genre = [mapping objectForKey:@"genre"];
+				if ([mapping[@"tags"] containsObject:tagName]) {
+					_genre = mapping[@"genre"];
 					break;
 				}
 			}

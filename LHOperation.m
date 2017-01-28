@@ -21,7 +21,7 @@
 @synthesize progressIndeterminate=_progressIndeterminate;
 
 
-- (id)initWithDocument:(LHDocument *)document
+- (instancetype)initWithDocument:(LHDocument *)document
 {
 	self = [super init];
 	if (self != nil) {
@@ -43,7 +43,7 @@
 		NSAssert(![NSThread isMainThread], @"NSOperation MOC created on main thread");
 		
 		_context = [[NSManagedObjectContext alloc] init];
-		[_context setPersistentStoreCoordinator:[[self.document managedObjectContext] persistentStoreCoordinator]];
+		_context.persistentStoreCoordinator = (self.document).managedObjectContext.persistentStoreCoordinator;
 		[_context setUndoManager:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
@@ -102,7 +102,7 @@
 		[self process];
 	}
 	@catch (NSException *e) {
-		NSLog(@"Error in %@: %@", [self className], e);
+		NSLog(@"Error in %@: %@", self.className, e);
 	}
 }
 

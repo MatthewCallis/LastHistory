@@ -55,8 +55,8 @@ enum {
 	
 	CALayer *_selectionRectLayer;
 	
-	id <LHEvent> __weak _highlightedEvent;
-	CALayer __weak *_mouseOverLayer;
+	id <LHEvent> _highlightedEvent;
+	CALayer *_mouseOverLayer;
 	
 	NSMutableDictionary *_nodeImages;			// by label
 	
@@ -74,8 +74,8 @@ enum {
 @property (assign) BOOL flipTimeline;
 @property (assign) BOOL showReferenceStreams;
 
-@property (assign) __weak id <LHEvent> highlightedEvent;
-@property (assign) __weak CALayer *mouseOverLayer;
+@property (assign) id <LHEvent> highlightedEvent;
+@property (assign) CALayer *mouseOverLayer;
 
 @property (readonly) NSDate *timelineStart;
 @property (readonly) NSDate *timelineEnd;

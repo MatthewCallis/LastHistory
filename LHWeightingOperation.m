@@ -36,14 +36,14 @@
 	if (historyEntries.count == 0)
 		return;
 	
-	self.progressMessage = [NSString stringWithFormat:@"Calculating weights for %u history entries...", historyEntries.count];
+	self.progressMessage = [NSString stringWithFormat:@"Calculating weights for %lu history entries...", (unsigned long)historyEntries.count];
 	self.progressIndeterminate = NO;
 	
 	NSUInteger maxTrackCount = [[tracks valueForKeyPath:@"@max.historyEntries.@count"] unsignedIntegerValue];
-	NSLog(@"max. track count: %u", maxTrackCount);
+	NSLog(@"max. track count: %lu", (unsigned long)maxTrackCount);
 	
-	LHHistoryEntry *firstHistoryEntry = [historyEntries objectAtIndex:0];
-	LHHistoryEntry *lastHistoryEntry = [historyEntries lastObject];
+	LHHistoryEntry *firstHistoryEntry = historyEntries[0];
+	LHHistoryEntry *lastHistoryEntry = historyEntries.lastObject;
 	NSDate *historyStartDate = firstHistoryEntry.timestamp;
 	NSTimeInterval historyDuration = [lastHistoryEntry.timestamp timeIntervalSinceDate:historyStartDate];
 	
@@ -53,7 +53,7 @@
 	NSUInteger processedCount = 0;
 	for (LHHistoryEntry *historyEntry in historyEntries)
 	{
-		if ([self isCancelled]) {
+		if (self.cancelled) {
 			[context rollback];
 			return;
 		}
@@ -70,11 +70,9 @@
 			comps.day = -HISTORY_ENTRY_WEIGHT_DATE_RANGE/2;
 			NSDate *startDate = [calendar dateByAddingComponents:comps toDate:historyEntry.timestamp options:0];
 			
-			NSPredicate *predicate = [similarEntriesPredicate predicateWithSubstitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:
-																								  track, @"track",
-																								  startDate, @"startDate",
-																								  endDate, @"endDate",
-																								  nil]];
+			NSPredicate *predicate = [similarEntriesPredicate predicateWithSubstitutionVariables:@{@"track": track,
+																								  @"startDate": startDate,
+																								  @"endDate": endDate}];
 			NSUInteger similarHistoryEntryCount = [self.document countForEntity:@"HistoryEntry" withPredicate:predicate inContext:context];
 			
 			NSTimeInterval timeSinceHistoryStart = [historyEntry.timestamp timeIntervalSinceDate:historyStartDate];
@@ -89,19 +87,19 @@
 			}
 		}
 		
-		[historyEntry setWeightValue:weight];
+		historyEntry.weightValue = weight;
 		
 		if ((++processedCount % PROCESS_CHUNK_SIZE) == 0) {
 			self.progress = (float)processedCount / historyEntries.count;
 			
-			if (![self saveContext])
+			if (!self.saveContext)
 				return;
 			
 //			NSLog(@"Calculated %u history entries", processedCount);
 		}
 	}
 	
-	[self saveContext];
+	self.saveContext;
 	
 	NSLog(@"Finished calculating history entries");
 }

@@ -139,7 +139,7 @@
 
 - (void)insertObjectsWithIDs:(NSSet *)objectIDs
 {
-	NSManagedObjectContext *context = [self.document managedObjectContext];
+	NSManagedObjectContext *context = (self.document).managedObjectContext;
 	
 	for (NSManagedObjectID *objectID in objectIDs)
 	{
@@ -150,7 +150,7 @@
 
 - (void)updateObjectsWithIDs:(NSSet *)objectIDs
 {
-	NSManagedObjectContext *context = [self.document managedObjectContext];
+	NSManagedObjectContext *context = (self.document).managedObjectContext;
 	
 	for (NSManagedObjectID *objectID in objectIDs)
 	{
@@ -194,7 +194,7 @@
 	}
 	else if ([keyPath isEqualToString:@"currentEvent"]) // highlighting of current event
 	{
-		id <LHEvent, NSObject> event = [change objectForKey:NSKeyValueChangeNewKey];
+		id <LHEvent, NSObject> event = change[NSKeyValueChangeNewKey];
 		[self setCurrentEvent:event];
 	}
 }
@@ -432,7 +432,7 @@
 - (void)didResize:(NSNotification *)notification
 {
 	// resize in next run-loop run, as at this point our layer hasn't update its size yet
-	if (![self inLiveResize])
+	if (!self.inLiveResize)
 		[self performSelector:@selector(layoutIfNeeded) withObject:nil afterDelay:0.0];
 }
 
@@ -445,7 +445,7 @@
 {
 	if (theEvent.keyCode == 53) // escape
 	{
-		if ([self isInFullScreenMode]) {
+		if (self.inFullScreenMode) {
 			// exit full-screen mode
 			[self exitFullScreenModeWithOptions:nil];
 		} else {
@@ -500,7 +500,7 @@
 	{
 		// create time selection layer
 		_selectionRectLayer = [CALayer layer];
-		_selectionRectLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, .1));
+		_selectionRectLayer.backgroundColor = CGColorCreateGenericGray(0, .1);
 		
 		// set autoresize mask to indicate type of time selection
 		NSUInteger autoresizingMask = kCALayerNotSizable;
@@ -562,7 +562,7 @@
 			if (self.flipTimeline)
 				swap((void *)&startPoint, (void *)&endPoint);
 			
-			NSTimeInterval referenceDate = [self.timelineStart timeIntervalSinceReferenceDate];
+			NSTimeInterval referenceDate = (self.timelineStart).timeIntervalSinceReferenceDate;
 			startDate = [NSDate dateWithTimeIntervalSinceReferenceDate:referenceDate + (startPoint / (self.timeScaleFactor / SECONDS_PER_DAY)) * (self.flipTimeline ? -1.0: 1.0)];
 			endDate = [NSDate dateWithTimeIntervalSinceReferenceDate:referenceDate + (endPoint / (self.timeScaleFactor / SECONDS_PER_DAY)) * (self.flipTimeline ? -1.0: 1.0)];
 		}
@@ -596,10 +596,9 @@
 		{
 			CAKeyframeAnimation *shakeAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position.x"];
 			const CGFloat delta = 5.0;
-			shakeAnimation.values = [NSArray arrayWithObjects:
+			shakeAnimation.values = @[[NSNumber numberWithFloat:-delta], [NSNumber numberWithFloat:delta],
 									 [NSNumber numberWithFloat:-delta], [NSNumber numberWithFloat:delta],
-									 [NSNumber numberWithFloat:-delta], [NSNumber numberWithFloat:delta],
-									 [NSNumber numberWithFloat:0.0], nil];
+									 @0.0f];
 			shakeAnimation.duration = .5;
 			shakeAnimation.additive = YES;
 			[hitLayer addAnimation:shakeAnimation forKey:@"playingFailAnimation"];
@@ -721,7 +720,7 @@
 	// make the view layer-backed
 	CALayer *mainLayer = self.layer;
 	mainLayer.name = @"mainLayer";
-	mainLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(1.0, 1.0));
+	mainLayer.backgroundColor = CGColorCreateGenericGray(1.0, 1.0);
 	mainLayer.layoutManager = [CAConstraintLayoutManager layoutManager]; // for viewing layer
 	
 	if (!self.document.firstHistoryEntry)
@@ -759,7 +758,7 @@
 	_labelsLayerY.anchorPoint = CGPointMake(0, 0);
 	_labelsLayerY.autoresizingMask = kCALayerMinYMargin;
 	_labelsLayerY.contentsGravity = kCAGravityBottomLeft;
-	_labelsLayerY.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(1.0, .8));
+	_labelsLayerY.backgroundColor = (CGColorRef) CGColorCreateGenericGray(1.0, .8);
 	[mainLayer addSublayer:_labelsLayerY];
 	
 	LHListeningHistoryStream *listeningHistoryStream = [[LHListeningHistoryStream alloc] initWithView:self];
@@ -773,14 +772,14 @@
 	_infoLayer.zPosition = kHighlightZ;
 	_infoLayer.anchorPoint = CGPointMake(0, 1); // position info box below/right cursor
 	_infoLayer.cornerRadius = 5.0;
-	_infoLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(1.0, .5));
+	_infoLayer.backgroundColor = (CGColorRef) CGColorCreateGenericGray(1.0, .5);
 	_infoLayer.hidden = YES;
 	[_scrollLayer addSublayer:_infoLayer];
 	
 	_crosshairXLayer = [CALayer layer];
     _crosshairXLayer.contentsScale = scale;
 	_crosshairXLayer.name = @"crosshairXLayer";
-	_crosshairXLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, CROSSHAIR_ALPHA));
+	_crosshairXLayer.backgroundColor = (CGColorRef) CGColorCreateGenericGray(0, CROSSHAIR_ALPHA);
 	_crosshairXLayer.zPosition = 1;
 	_crosshairXLayer.bounds = CGRectMake(0, 0, layerWidth, 1.0);
 	[_crosshairXLayer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintWidth relativeTo:@"superlayer" attribute:kCAConstraintWidth]];
@@ -790,7 +789,7 @@
 	_crosshairYLayer = [CALayer layer];
     _crosshairYLayer.contentsScale = scale;
 	_crosshairYLayer.name = @"crosshairYLayer";
-	_crosshairYLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, CROSSHAIR_ALPHA));
+	_crosshairYLayer.backgroundColor = (CGColorRef) CGColorCreateGenericGray(0, CROSSHAIR_ALPHA);
 	_crosshairYLayer.zPosition = 1;
 	_crosshairYLayer.bounds = CGRectMake(0, 0, 1.0, mainLayer.bounds.size.height);
 	[_crosshairYLayer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintHeight relativeTo:@"superlayer" attribute:kCAConstraintHeight]];
@@ -814,7 +813,7 @@
     _eventHighlightLayer.contentsScale = scale;
 	_eventHighlightLayer.name = @"eventHighlightLayer";
 	_eventHighlightLayer.anchorPoint = CGPointMake(0, 0);
-	_eventHighlightLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0.0, .15));
+	_eventHighlightLayer.backgroundColor = (CGColorRef) CGColorCreateGenericGray(0.0, .15);
 	_eventHighlightLayer.hidden = YES;
 	[_eventHighlightLayer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMidY relativeTo:@"superlayer" attribute:kCAConstraintMidY]];
 	[_eventHighlightLayer addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintHeight relativeTo:@"superlayer" attribute:kCAConstraintHeight]];
@@ -825,7 +824,7 @@
     _currentEventHighlightLayer.contentsScale = scale;
 	_currentEventHighlightLayer.name = @"currentEventHighlightLayer";
 	_currentEventHighlightLayer.anchorPoint = CGPointMake(0, 0);
-	_currentEventHighlightLayer.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericRGB(0, 0.5, 0, .15));
+	_currentEventHighlightLayer.backgroundColor = (CGColorRef) CGColorCreateGenericRGB(0, 0.5, 0, .15);
 	
 	[self setupReferenceStreams];
 	[listeningHistoryStream generateNodes];
@@ -862,10 +861,8 @@
 	}
 	
 	// update listening history constraints
-	NSArray *constraints = [NSArray arrayWithObjects:
-							[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:(self.showReferenceStreams ? PHOTO_STREAM : @"labelsLayerX") attribute:kCAConstraintMaxY offset:10.0],
-							[CAConstraint constraintWithAttribute:kCAConstraintMaxY relativeTo:@"superlayer" attribute:kCAConstraintMaxY],
-							nil];
+	NSArray *constraints = @[[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:(self.showReferenceStreams ? PHOTO_STREAM : @"labelsLayerX") attribute:kCAConstraintMaxY offset:10.0],
+							[CAConstraint constraintWithAttribute:kCAConstraintMaxY relativeTo:@"superlayer" attribute:kCAConstraintMaxY]];
 	[self streamWithName:LISTENING_HISTORY_STREAM].constraints = constraints;
 	
 	// run layout manager
@@ -897,10 +894,9 @@
 		NSDateComponents *markingDateAddComps = [NSDateComponents new];
 		markingDateAddComps.month = 1;
 		
-		NSArray *monthNames = [[NSDateFormatter new] shortStandaloneMonthSymbols];
-		NSDictionary *stringAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-									 [NSColor grayColor], NSForegroundColorAttributeName,
-									 [NSFont systemFontOfSize:9], NSFontAttributeName, nil];
+		NSArray *monthNames = [NSDateFormatter new].shortStandaloneMonthSymbols;
+		NSDictionary *stringAttrs = @{NSForegroundColorAttributeName: [NSColor grayColor],
+									 NSFontAttributeName: [NSFont systemFontOfSize:9]};
 		
 		const CGFloat padding = 20.0 * self.timeScaleFactor; // x-padding to avoid cutting off text at start/end
 		NSSize markingImageSize = NSMakeSize([self xPositionForDate:self.timelineEnd]-STREAM_PADDING_X+(padding*2), LABELS_X_HEIGHT);
@@ -920,7 +916,7 @@
 			
 			// draw month name
 			CGFloat monthWidth = [self xPositionForDate:nextMarkingDate] - STREAM_PADDING_X + padding - monthPosX;
-			NSAttributedString *monthString = [[NSAttributedString alloc] initWithString:[monthNames objectAtIndex:(month-1)] attributes:stringAttrs];
+			NSAttributedString *monthString = [[NSAttributedString alloc] initWithString:monthNames[(month-1)] attributes:stringAttrs];
 			NSSize monthSize = [monthString size];
 			[monthString drawAtPoint:NSMakePoint((monthPosX + monthWidth/2.0) - monthSize.width/2.0, 1.0)];
 			
@@ -934,7 +930,7 @@
 		markingLayer.anchorPoint = CGPointMake(0, 0);
 		markingLayer.bounds = CGRectMake(0, 0, markingImageSize.width, markingImageSize.height);
 		markingLayer.position = CGPointMake([self xPositionForDate:self.timelineStart]-padding, 0);
-		markingLayer.contents = (id)[markingImage cgImage];
+		markingLayer.contents = (id)markingImage.cgImage;
 		markingLayer.contentsGravity = kCAGravityBottomLeft;
 		[_labelsLayerX addSublayer:markingLayer];
 	}
@@ -944,10 +940,10 @@
 		NSDateComponents *dateComps = [NSDateComponents new];
 		NSInteger startYear = [calendar components:NSYearCalendarUnit fromDate:firstDate].year;
 		NSInteger endYear = [calendar components:NSYearCalendarUnit fromDate:lastDate].year;
-		NSDictionary *stringAttrs = [NSDictionary dictionaryWithObjectsAndKeys:[NSFont boldSystemFontOfSize:24.0], NSFontAttributeName, [NSColor grayColor], NSForegroundColorAttributeName, nil];
+		NSDictionary *stringAttrs = @{NSFontAttributeName: [NSFont boldSystemFontOfSize:24.0], NSForegroundColorAttributeName: [NSColor grayColor]};
 		for (NSInteger year = startYear; year <= endYear; year++)
 		{
-			NSAttributedString *yearString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d", year]
+			NSAttributedString *yearString = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld", (long)year]
 																			 attributes:stringAttrs];
 			CATextLayer *layer = [CATextLayer layer];
             layer.contentsScale = scale;
@@ -982,13 +978,13 @@
 			CGFloat positionY = [self yPositionForTime:hour * SECONDS_PER_HOUR];
 			NSRectFill(NSMakeRect(0.0, positionY, markingImageSize.width, 1.0));
 			
-			NSString *label = [NSString stringWithFormat:@"%u h", hour];
+			NSString *label = [NSString stringWithFormat:@"%lu h", (unsigned long)hour];
 			[label drawAtPoint:NSMakePoint(2.0 / scale, positionY + 2.0)
-				withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSColor grayColor], NSForegroundColorAttributeName, nil]];
+				withAttributes:@{NSForegroundColorAttributeName: [NSColor grayColor]}];
 		}
 		[markingImage unlockFocus];
 		
-		_labelsLayerY.contents = (id)[markingImage cgImage];
+		_labelsLayerY.contents = (id)markingImage.cgImage;
 	}
 }
 
@@ -1029,20 +1025,20 @@
 	NSRange infoStringSmallRange = NSMakeRange(0, 0);
 	NSRange infoStringBoldRange = NSMakeRange(0, 0);
 	NSDateFormatter *outputFormatter = [NSDateFormatter new];
-	[outputFormatter setDateStyle:NSDateFormatterFullStyle];
+	outputFormatter.dateStyle = NSDateFormatterFullStyle;
 	
 	if ([data isKindOfClass:[LHHistoryEntry class]])
 	{
 		LHHistoryEntry *historyEntry = (LHHistoryEntry *)data;
 		LHTrack *track = historyEntry.track;
-		[outputFormatter setTimeStyle:NSDateFormatterMediumStyle];
+		outputFormatter.timeStyle = NSDateFormatterMediumStyle;
 		
 		NSString *titleText = [NSString stringWithFormat:@"%@\n%@", track.name, track.artist.name];
-		NSString *text = [NSString stringWithFormat:@"%@\n%@%@%@\nPlays: %u, Weight: %.2f\nGenre: %@\n",
-						  titleText, 
-						  (track.album ? track.album.name : @""), (track.album ? @"\n" : @""),
-						  [outputFormatter stringFromDate:historyEntry.timestamp],
-						  track.trackCount, [historyEntry weightValue],
+        NSString *text = [NSString stringWithFormat:@"%@\n%@%@%@\nPlays: %lu, Weight: %.2f\nGenre: %@\n",
+                          titleText, 
+                          (track.album ? track.album.name : @""), (track.album ? @"\n" : @""),
+                          [outputFormatter stringFromDate:historyEntry.timestamp],
+                          (unsigned long)track.trackCount, historyEntry.weightValue,
 						  track.genre];
 		NSString *smallText = [NSString stringWithFormat:@"Tags: %@", [track tagsStringWrappedAt:80]];
 		infoStringText = [text stringByAppendingString:smallText];
@@ -1057,7 +1053,7 @@
 		NSString *titleText = [NSString stringWithFormat:@"%@\n%@ - %@",
 							   event.title,
 							   [outputFormatter stringFromDate:event.startDate], [outputFormatter stringFromDate:event.endDate]];
-		infoStringText = [NSString stringWithFormat:@"%@\n%u history entries", titleText, [self.document numberOfHistoryEntriesForEvent:event]];
+		infoStringText = [NSString stringWithFormat:@"%@\n%lu history entries", titleText, (unsigned long)[self.document numberOfHistoryEntriesForEvent:event]];
 		infoStringLargeRange = NSMakeRange(0, titleText.length);
 		infoStringBoldRange = NSMakeRange(0, event.title.length);
 	}
@@ -1072,7 +1068,7 @@
 			dateString = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
 		
 		NSString *titleText = [NSString stringWithFormat:@"%@\n%@", roll.name, dateString];
-		infoStringText = [NSString stringWithFormat:@"%@\n%u history entries\n%u photos", titleText, [self.document numberOfHistoryEntriesForEvent:roll], roll.photos.count];
+		infoStringText = [NSString stringWithFormat:@"%@\n%lu history entries\n%lu photos", titleText, (unsigned long)[self.document numberOfHistoryEntriesForEvent:roll], (unsigned long)roll.photos.count];
 		infoStringLargeRange = NSMakeRange(0, titleText.length);
 		infoStringBoldRange = NSMakeRange(0, roll.name.length);
 	}
@@ -1081,14 +1077,14 @@
 	if (infoStringText)
 	{
 		infoString = [[NSMutableAttributedString alloc] initWithString:infoStringText
-															attributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont systemFontOfSize:11.0], NSFontAttributeName, nil]];
+															attributes:@{NSFontAttributeName: [NSFont systemFontOfSize:11.0]}];
 		[infoString beginEditing];
 		if (infoStringLargeRange.length > 0)
-			[infoString setAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont systemFontOfSize:14.0], NSFontAttributeName, nil] range:infoStringLargeRange];
+			[infoString setAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:14.0]} range:infoStringLargeRange];
 		if (infoStringSmallRange.length > 0)
-			[infoString setAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont systemFontOfSize:9.0], NSFontAttributeName, nil] range:infoStringSmallRange];
+			[infoString setAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:9.0]} range:infoStringSmallRange];
 		if (infoStringBoldRange.length > 0)
-			[infoString setAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[NSFont boldSystemFontOfSize:14.0], NSFontAttributeName, nil] range:infoStringBoldRange];
+			[infoString setAttributes:@{NSFontAttributeName: [NSFont boldSystemFontOfSize:14.0]} range:infoStringBoldRange];
 		[infoString endEditing];
 	}
 	

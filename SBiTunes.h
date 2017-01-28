@@ -118,7 +118,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 - (void) close;  // Close an object
 - (void) delete;  // Delete an element from an object
 - (SBObject *) duplicateTo:(SBObject *)to;  // Duplicate one or more object(s)
-- (BOOL) exists;  // Verify if an object exists
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL exists;  // Verify if an object exists
 - (void) open;  // open the specified object(s)
 - (void) playOnce:(BOOL)once;  // play the current track or the specified track or file.
 
@@ -133,14 +133,14 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // The application program
 @interface SBiTunesApplication : SBApplication
 
-- (SBElementArray *) browserWindows;
-- (SBElementArray *) encoders;
-- (SBElementArray *) EQPresets;
-- (SBElementArray *) EQWindows;
-- (SBElementArray *) playlistWindows;
-- (SBElementArray *) sources;
-- (SBElementArray *) visuals;
-- (SBElementArray *) windows;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *browserWindows;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *encoders;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *EQPresets;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *EQWindows;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *playlistWindows;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *sources;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *visuals;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *windows;
 
 @property (copy) SBiTunesEncoder *currentEncoder;  // the currently selected encoder (MP3, AIFF, WAV, etc.)
 @property (copy) SBiTunesEQPreset *currentEQPreset;  // the currently selected equalizer preset
@@ -191,7 +191,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 @interface SBiTunesItem : SBObject
 
 @property (copy, readonly) SBObject *container;  // the container of the item
-- (NSInteger) id;  // the id of the item
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger id;  // the id of the item
 @property (readonly) NSInteger index;  // The index of the item in internal application order.
 @property (copy) NSString *name;  // the name of the item
 @property (copy, readonly) NSString *persistentID;  // the id of the item as a hexidecimal string. This id does not change over time.
@@ -200,7 +200,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 - (void) close;  // Close an object
 - (void) delete;  // Delete an element from an object
 - (SBObject *) duplicateTo:(SBObject *)to;  // Duplicate one or more object(s)
-- (BOOL) exists;  // Verify if an object exists
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL exists;  // Verify if an object exists
 - (void) open;  // open the specified object(s)
 - (void) playOnce:(BOOL)once;  // play the current track or the specified track or file.
 - (void) reveal;  // reveal and select a track or playlist
@@ -251,7 +251,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // a list of songs/streams
 @interface SBiTunesPlaylist : SBiTunesItem
 
-- (SBElementArray *) tracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *tracks;
 
 @property (readonly) NSInteger duration;  // the total length of all songs (in seconds)
 @property (copy) NSString *name;  // the name of the playlist
@@ -271,7 +271,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // a playlist representing an audio CD
 @interface SBiTunesAudioCDPlaylist : SBiTunesPlaylist
 
-- (SBElementArray *) audioCDTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *audioCDTracks;
 
 @property (copy) NSString *artist;  // the artist of the CD
 @property BOOL compilation;  // is this CD a compilation album?
@@ -287,7 +287,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // a playlist representing the contents of a portable device
 @interface SBiTunesDevicePlaylist : SBiTunesPlaylist
 
-- (SBElementArray *) deviceTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *deviceTracks;
 
 
 @end
@@ -295,8 +295,8 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // the master music library playlist
 @interface SBiTunesLibraryPlaylist : SBiTunesPlaylist
 
-- (SBElementArray *) fileTracks;
-- (SBElementArray *) URLTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *fileTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *URLTracks;
 - (SBElementArray *) sharedTracks;
 
 
@@ -305,7 +305,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // the radio tuner playlist
 @interface SBiTunesRadioTunerPlaylist : SBiTunesPlaylist
 
-- (SBElementArray *) URLTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *URLTracks;
 
 
 @end
@@ -313,12 +313,12 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // a music source (music library, CD, device, etc.)
 @interface SBiTunesSource : SBiTunesItem
 
-- (SBElementArray *) audioCDPlaylists;
-- (SBElementArray *) devicePlaylists;
-- (SBElementArray *) libraryPlaylists;
-- (SBElementArray *) playlists;
-- (SBElementArray *) radioTunerPlaylists;
-- (SBElementArray *) userPlaylists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *audioCDPlaylists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *devicePlaylists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *libraryPlaylists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *playlists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *radioTunerPlaylists;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *userPlaylists;
 
 @property (readonly) long long capacity;  // the total size of the source if it has a fixed size
 @property (readonly) long long freeSpace;  // the free space on the source if it has a fixed size
@@ -332,7 +332,7 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // playable audio source
 @interface SBiTunesTrack : SBiTunesItem
 
-- (SBElementArray *) artworks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *artworks;
 
 @property (copy) NSString *album;  // the album name of the track
 @property (copy) NSString *albumArtist;  // the album artist of the track
@@ -437,8 +437,8 @@ typedef enum SBiTunesERtK SBiTunesERtK;
 // custom playlists created by the user
 @interface SBiTunesUserPlaylist : SBiTunesPlaylist
 
-- (SBElementArray *) fileTracks;
-- (SBElementArray *) URLTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *fileTracks;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) SBElementArray *URLTracks;
 - (SBElementArray *) sharedTracks;
 
 @property BOOL shared;  // is this playlist shared?

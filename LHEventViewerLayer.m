@@ -83,11 +83,11 @@
 	return layer;
 }
 
-- (id)init
+- (instancetype)init
 {
 	self = [super init];
 	if (self != nil) {
-		self.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, 1.0)); // black
+		self.backgroundColor = (CGColorRef) CGColorCreateGenericGray(0, 1.0); // black
 		self.contentsGravity = kCAGravityResizeAspect;
 		self.anchorPoint = CGPointMake(0, 0);
 		self.layoutManager = [CAConstraintLayoutManager layoutManager];
@@ -112,7 +112,7 @@
 	return self;
 }
 
-- (id)initWithLayer:(id)layer
+- (instancetype)initWithLayer:(id)layer
 {
 	self = [super initWithLayer:layer];
 	if (self != nil) {
@@ -178,8 +178,8 @@
 		}
 	}
 	
-	CGContextSetStrokeColorWithColor(theContext, (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(1.0, 1.0)));
-	CGContextSetFillColorWithColor(theContext, (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(1.0, 1.0)));
+	CGContextSetStrokeColorWithColor(theContext, (CGColorRef) CGColorCreateGenericGray(1.0, 1.0));
+	CGContextSetFillColorWithColor(theContext, (CGColorRef) CGColorCreateGenericGray(1.0, 1.0));
 	CGContextSetLineWidth(theContext, 2.0);
 	
 	CGContextBeginPath(theContext);
@@ -198,10 +198,10 @@
 	NSArray *photos = self.photoRoll.photos;
 	
 	if (newIndex < 0)
-		newIndex = [photos count] - abs(newIndex);
-	newIndex = newIndex % [photos count];
+		newIndex = photos.count - abs(newIndex);
+	newIndex = newIndex % photos.count;
 	
-	self.contents = (id)[[[photos objectAtIndex:newIndex] image] cgImage];
+	self.contents = (id)[photos[newIndex] image].cgImage;
 	
 	_photoRollIndex = newIndex;
 }
@@ -216,18 +216,13 @@
 		_playTimer = nil;
 	}
 	
-	CALayer *playButton = [[[self sublayers] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name = %@", PLAY_BUTTON_LAYER_NAME]] lastObject];
+	CALayer *playButton = [self.sublayers filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name = %@", PLAY_BUTTON_LAYER_NAME]].lastObject;
 	[playButton setNeedsDisplay];
 }
 
 - (void)onPlayTimer:(NSTimer *)timer
 {
 	self.photoRollIndex++;
-	
-	// collect image references after animation
-	[[NSGarbageCollector defaultCollector] performSelector:@selector(collectExhaustively)
-												withObject:nil
-												afterDelay:PLAY_TIMER_INTERVAL/2];
 }
 
 - (BOOL)handleMouseUpAtPoint:(CGPoint)mousePoint

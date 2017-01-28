@@ -11,10 +11,10 @@
 
 @interface NSDate (Extras)
 
-- (NSDate *)day;
-- (NSInteger)year;
-- (NSInteger)month;
-- (NSInteger)hour;
-- (NSInteger)weekday;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSDate *day;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger year;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger month;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger hour;
+@property (NS_NONATOMIC_IOSONLY, readonly) NSInteger weekday;
 
 @end

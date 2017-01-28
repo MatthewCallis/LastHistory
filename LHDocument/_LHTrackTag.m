@@ -14,7 +14,7 @@
 }
 
 - (LHTrackTagID*)objectID {
-	return (LHTrackTagID*)[super objectID];
+	return (LHTrackTagID*)super.objectID;
 }
 
 
@@ -25,12 +25,12 @@
 
 
 - (short)countValue {
-	NSNumber *result = [self count];
-	return result ? [result shortValue] : 0;
+	NSNumber *result = self.count;
+	return result ? result.shortValue : 0;
 }
 
 - (void)setCountValue:(short)value_ {
-	[self setCount:[NSNumber numberWithShort:value_]];
+	self.count = @(value_);
 }
 
 

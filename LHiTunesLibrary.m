@@ -20,17 +20,17 @@
 	static id defaultLibrary = nil;
 	if (!defaultLibrary) {
 		[[NSUserDefaults standardUserDefaults] synchronize];
-		NSArray *dbs = [[[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.apple.iApps"] objectForKey:@"iTunesRecentDatabases"];
-		if ([dbs count] > 0) {
-			NSURL *url = [NSURL URLWithString:[dbs objectAtIndex:0]];
-			if ([url isFileURL])
+		NSArray *dbs = [[NSUserDefaults standardUserDefaults] persistentDomainForName:@"com.apple.iApps"][@"iTunesRecentDatabases"];
+		if (dbs.count > 0) {
+			NSURL *url = [NSURL URLWithString:dbs[0]];
+			if (url.fileURL)
 				defaultLibrary = [[self alloc] initWithURL:url];
 		}
 	}
 	return defaultLibrary;
 }
 
-- (id)initWithURL:(NSURL *)libraryURL
+- (instancetype)initWithURL:(NSURL *)libraryURL
 {
 	self = [super init];
 	if (self != nil) {
@@ -55,22 +55,22 @@
 		return nil;
 	}
 	
-	NSDictionary *tracks = [library objectForKey:@"Tracks"];
+	NSDictionary *tracks = library[@"Tracks"];
 	if (!tracks) {
 		NSLog(@"Error: No tracks found in iTunes library.");
 		return nil;
 	}
 	
-	NSLog(@"Read %d tracks from iTunes.", tracks.count);
+	NSLog(@"Read %lu tracks from iTunes.", (unsigned long)tracks.count);
 	
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:tracks.count];
 	for (NSDictionary *track in tracks.allValues)
 	{
 		NSString *name = [track valueForKey:@"Name"];
 		NSString *artist = [track valueForKey:@"Artist"];
-		NSString *trackID = [[NSString stringWithFormat:@"%@ - %@", artist, name] lowercaseString];
+		NSString *trackID = [NSString stringWithFormat:@"%@ - %@", artist, name].lowercaseString;
 		
-		[result setObject:track forKey:trackID];
+		result[trackID] = track;
 	}
 	
 	_tracks = [result copy];
@@ -79,8 +79,8 @@
 
 - (NSDictionary *)trackForTrack:(NSString *)name artist:(NSString *)artist
 {
-	NSString *trackID = [[NSString stringWithFormat:@"%@ - %@", artist, name] lowercaseString];
-	return [self.tracks objectForKey:trackID];
+	NSString *trackID = [NSString stringWithFormat:@"%@ - %@", artist, name].lowercaseString;
+	return (self.tracks)[trackID];
 }
 
 
@@ -97,8 +97,8 @@
 
 - (SBiTunesSource *)source
 {
-	for (SBiTunesSource *source in [[self app] sources]) {
-		if ([source kind] == SBiTunesESrcLibrary)
+	for (SBiTunesSource *source in [self app].sources) {
+		if (source.kind == SBiTunesESrcLibrary)
 			return source;
 	}
 	
@@ -110,8 +110,8 @@
 {
 	if (!_masterPlaylist)
 	{
-		for (SBiTunesPlaylist *playlist in [[self source] playlists]) {
-			if ([playlist specialKind] == SBiTunesESpKMusic) {
+		for (SBiTunesPlaylist *playlist in [self source].playlists) {
+			if (playlist.specialKind == SBiTunesESpKMusic) {
 				_masterPlaylist = playlist;
 				break;
 			}
@@ -125,8 +125,8 @@
 {
 	SBiTunesPlaylist *masterPlaylist = [self masterPlaylist];
 	
-	NSString *persistentID = [track objectForKey:@"Persistent ID"];
-	return [[[masterPlaylist tracks] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"persistentID == %@", persistentID]] lastObject];
+	NSString *persistentID = track[@"Persistent ID"];
+	return [masterPlaylist.tracks filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"persistentID == %@", persistentID]].lastObject;
 }
 
 - (void)revealTrack:(NSDictionary *)track
@@ -140,11 +140,11 @@
 
 - (void)createPlaylist:(NSString *)name withTracks:(NSArray *)tracks
 {
-	if ([tracks count] > 0)
+	if (tracks.count > 0)
 	{
-		NSDictionary *playlistProperties = [NSDictionary dictionaryWithObject:name forKey:@"name"];
+		NSDictionary *playlistProperties = @{@"name": name};
 		SBiTunesPlaylist *playlist = [[[[self app] classForScriptingClass:@"playlist"] alloc] initWithProperties:playlistProperties];
-		[[[self source] userPlaylists] insertObject:playlist atIndex:0];
+		[[self source].userPlaylists insertObject:playlist atIndex:0];
 		
 		for (NSDictionary *track in tracks)
 		{

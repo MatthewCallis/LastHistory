@@ -13,17 +13,17 @@
 
 
 @interface LHStreamLayer : CALayer {
-	LHHistoryView __weak *_view;
+	LHHistoryView *_view;
 	
 	CALayer *_highlightedNode;
 }
 
-@property (readonly) LHHistoryView __weak *view;
+@property (readonly) LHHistoryView *view;
 @property (retain) CALayer *highlightedNode;
 
 + (Class)nodeClass;
 
-- (id)initWithView:(LHHistoryView *)view;
+- (instancetype)initWithView:(LHHistoryView *)view NS_DESIGNATED_INITIALIZER;
 
 - (void)setupLayer;
 - (void)generateNodes;

@@ -18,8 +18,8 @@
 	NSInteger _endTime;
 }
 
-- (id)initWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime;
-- (id)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate startTime:(NSInteger)startTime endTime:(NSInteger)endTime;
+- (instancetype)initWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime;
+- (instancetype)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate startTime:(NSInteger)startTime endTime:(NSInteger)endTime NS_DESIGNATED_INITIALIZER;
 
 @property (readonly) NSDate *eventStart;
 @property (readonly) NSDate *eventEnd;

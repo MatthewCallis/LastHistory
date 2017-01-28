@@ -14,7 +14,7 @@
 
 - (NSString *)md5
 {
-	const char *cStr = [self UTF8String];
+	const char *cStr = self.UTF8String;
 	unsigned char result[CC_MD5_DIGEST_LENGTH];
 	
 	CC_MD5(cStr, strlen(cStr), result);
@@ -23,7 +23,7 @@
 	for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
 		[resultStr appendFormat:@"%02x", result[i]];
 	}
-	return [[resultStr copy] autorelease];
+	return [resultStr copy];
 }
 
 @end

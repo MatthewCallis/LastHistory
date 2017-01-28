@@ -14,7 +14,7 @@
 }
 
 - (LHTrackID*)objectID {
-	return (LHTrackID*)[super objectID];
+	return (LHTrackID*)super.objectID;
 }
 
 
@@ -82,15 +82,11 @@
 + (NSArray*)fetchTracksWithNameAndArtist:(NSManagedObjectContext*)moc_ name:(NSString*)name_ artist:(LHArtist*)artist_ error:(NSError**)error_ {
 	NSError *error = nil;
 	
-	NSManagedObjectModel *model = [[moc_ persistentStoreCoordinator] managedObjectModel];
+	NSManagedObjectModel *model = moc_.persistentStoreCoordinator.managedObjectModel;
 	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:@"tracksWithNameAndArtist"
-													 substitutionVariables:[NSDictionary dictionaryWithObjectsAndKeys:
+													 substitutionVariables:@{@"name": name_,
 														
-														name_, @"name",
-														
-														artist_, @"artist",
-														
-														nil]
+														@"artist": artist_}
 													 ];
 	NSAssert(fetchRequest, @"Can't find fetch request named \"tracksWithNameAndArtist\".");
 	

@@ -16,13 +16,13 @@
 @synthesize eventStartTime=_startTime;
 @synthesize eventEndTime=_endTime;
 
-- (id)initWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime
+- (instancetype)initWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime
 {
 	self = [self initWithStartDate:nil endDate:nil startTime:startTime endTime:endTime];
 	return self;
 }
 
-- (id)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate startTime:(NSInteger)startTime endTime:(NSInteger)endTime
+- (instancetype)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate startTime:(NSInteger)startTime endTime:(NSInteger)endTime
 {
 	self = [super init];
 	if (self != nil) {

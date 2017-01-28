@@ -61,7 +61,7 @@
 			float aspectRatio = image.size.width / image.size.height;
 			
 			layer.contentsGravity = kCAGravityResizeAspect;
-			layer.contents = (id)[image cgImage];
+			layer.contents = (id)image.cgImage;
 			layer.anchorPoint = CGPointMake(1.0, 0.5);
 			layer.bounds = CGRectMake(0, 0, PHOTOS_HEIGHT_MIN * weightFactor * aspectRatio, PHOTOS_HEIGHT_MIN * weightFactor);
 			layer.position = CGPointMake([self.view xPositionForDate:roll.eventStart] + layer.bounds.size.width, photoPosY);
@@ -71,7 +71,7 @@
 		}
 	}
 	
-	NSLog(@"Generated %u photo nodes", processedCount);
+	NSLog(@"Generated %lu photo nodes", (unsigned long)processedCount);
 }
 
 - (void)layoutSublayers
@@ -95,7 +95,7 @@
 	{
 		// restore key photo
 		LHiPhotoRoll *highlightedRoll = [_highlightedNode valueForKey:LAYER_DATA_KEY];
-		_highlightedNode.contents = (id)[highlightedRoll.keyPhoto.thumb cgImage];
+		_highlightedNode.contents = (id)(highlightedRoll.keyPhoto.thumb).cgImage;
 		
 		// reset cache
 		[_highlightedNode setValue:nil forKey:@"currentPhoto"];
@@ -105,7 +105,7 @@
 		newLayer.zPosition = kHighlightZ;
 		
 		// scale to highlight
-		[_highlightedNode setValue:[NSNumber numberWithFloat:1.0] forKeyPath:@"transform.scale"];
+		[_highlightedNode setValue:@1.0f forKeyPath:@"transform.scale"];
 		float weightFactor = PHOTOS_HEIGHT_MAX / newLayer.bounds.size.height;
 		[newLayer setValue:[NSNumber numberWithFloat:3.0 * weightFactor] forKeyPath:@"transform.scale"];
 		
@@ -134,9 +134,9 @@
 		
 		if (photoIndex >= 0 && photoIndex < roll.photos.count)
 		{
-			LHiPhotoPhoto *photo = [roll.photos objectAtIndex:photoIndex];
+			LHiPhotoPhoto *photo = (roll.photos)[photoIndex];
 			if (![photo isEqual:[rollLayer valueForKey:@"currentPhoto"]]) {
-				rollLayer.contents = (id)[photo.thumb cgImage];
+				rollLayer.contents = (id)(photo.thumb).cgImage;
 				[rollLayer setValue:photo forKey:@"currentPhoto"];
 			}
 		}

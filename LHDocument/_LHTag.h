@@ -11,7 +11,7 @@
 
 @interface _LHTag : NSManagedObject {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
-- (LHTagID*)objectID;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) LHTagID *objectID;
 
 
 
@@ -23,7 +23,7 @@
 
 
 @property (nonatomic, retain) NSSet* trackTags;
-- (NSMutableSet*)trackTagsSet;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *trackTagsSet;
 
 
 

@@ -21,11 +21,11 @@ extern NSString *LFWebServiceErrorDomain;
 	NSString *_token; // used during authorization
 }
 
-- (id)initWithApiKey:(NSString *)apiKey secret:(NSString *)secret;
-- (id)initWithApiKey:(NSString *)apiKey
+- (instancetype)initWithApiKey:(NSString *)apiKey secret:(NSString *)secret;
+- (instancetype)initWithApiKey:(NSString *)apiKey
 			  secret:(NSString *)secret
 			userName:(NSString *)userName
-		  sessionKey:(NSString *)sessionKey;
+		  sessionKey:(NSString *)sessionKey NS_DESIGNATED_INITIALIZER;
 
 @property (readonly, copy) NSString *apiKey;
 @property (readonly, copy) NSString *secret;
@@ -35,9 +35,9 @@ extern NSString *LFWebServiceErrorDomain;
 
 @property (readonly) BOOL isAuthenticated;
 
-- (NSString *)authenticateGetToken;
-- (NSURL *)authenticateGetAuthorizationURL;
-- (BOOL)authenticateFinish;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSString *authenticateGetToken;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSURL *authenticateGetAuthorizationURL;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL authenticateFinish;
 
 - (NSXMLDocument *)callMethod:(NSString *)methodName withParameters:(NSDictionary *)params error:(NSError **)outError;
 - (NSXMLDocument *)callAuthenticatedMethod:(NSString *)methodName withParameters:(NSDictionary *)params error:(NSError **)outError;
