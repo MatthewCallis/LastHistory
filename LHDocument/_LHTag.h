@@ -15,14 +15,14 @@
 
 
 
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, retain) NSSet* trackTags;
+@property (nonatomic, strong) NSSet* trackTags;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *trackTagsSet;
 
 

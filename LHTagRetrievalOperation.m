@@ -40,7 +40,10 @@
 	self.progressMessage = [NSString stringWithFormat:@"Retrieving tags for %lu tracks...", (unsigned long)tracks.count];
 	self.progressIndeterminate = NO;
 	
-	LFWebService *webService = (id)[NSApp.delegate lfWebService];
+    NSLog(@"%@", NSApp.delegate);
+    NSLog(@"!!!");
+    
+    LFWebService *webService = ((id<LFWebServiceDelegateDataSource>)NSApp.delegate).lfWebService;
 	NSAssert(webService, @"No web service");
 	
 	NSUInteger processedCount = 0;

@@ -16,25 +16,25 @@
 
 
 
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSString *mbid;
+@property (nonatomic, strong) NSString *mbid;
 
 //- (BOOL)validateMbid:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, retain) NSSet* albums;
+@property (nonatomic, strong) NSSet* albums;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *albumsSet;
 
 
 
-@property (nonatomic, retain) NSSet* tracks;
+@property (nonatomic, strong) NSSet* tracks;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *tracksSet;
 
 

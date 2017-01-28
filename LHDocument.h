@@ -26,7 +26,7 @@ extern NSString *LHDocumentDidCloseNotification;
 <NSSoundDelegate>
 #endif
 {
-	IBOutlet LHHistoryView *historyView;
+	IBOutlet LHHistoryView *__weak historyView;
 	
 	IBOutlet NSTokenField *searchField;
 	
@@ -56,28 +56,28 @@ extern NSString *LHDocumentDidCloseNotification;
 	LHOperation *_currentOperation;
 }
 
-@property (readonly) LHHistoryView *historyView;
+@property (weak, readonly) LHHistoryView *historyView;
 
 @property (assign) int operationMode;
 @property (assign) BOOL chartsMode;
-@property (retain) NSArray *playlist;
+@property (strong) NSArray *playlist;
 
-@property (retain) LHHistoryEntry *currentHistoryEntry;
-@property (retain) id <LHEvent> currentEvent;
-@property (retain) NSSound *currentSound;
+@property (strong) LHHistoryEntry *currentHistoryEntry;
+@property (strong) id <LHEvent> currentEvent;
+@property (strong) NSSound *currentSound;
 
-@property (readonly) NSString *infoString;
+@property (weak, readonly) NSString *infoString;
 
-@property (readonly) NSArray *tracks;
+@property (weak, readonly) NSArray *tracks;
 @property (readonly) NSUInteger tracksCount;
 
-@property (readonly) NSArray *historyEntries;
+@property (weak, readonly) NSArray *historyEntries;
 @property (readonly) NSUInteger historyEntriesCount;
 
-@property (readonly) LHHistoryEntry *firstHistoryEntry;
-@property (readonly) LHHistoryEntry *lastHistoryEntry;
+@property (weak, readonly) LHHistoryEntry *firstHistoryEntry;
+@property (weak, readonly) LHHistoryEntry *lastHistoryEntry;
 
-@property (retain) LHOperation *currentOperation;
+@property (strong) LHOperation *currentOperation;
 
 
 - (void)setUsername:(NSString *)username;

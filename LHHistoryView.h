@@ -34,7 +34,7 @@ enum {
 @protocol LHEvent;
 
 @interface LHHistoryView : NSView {
-	IBOutlet LHDocument *document;
+	IBOutlet LHDocument *__weak document;
 	
 	float _timeScaleFactor;
 	float _nodeScaleFactor;
@@ -55,8 +55,8 @@ enum {
 	
 	CALayer *_selectionRectLayer;
 	
-	id <LHEvent> _highlightedEvent;
-	CALayer *_mouseOverLayer;
+	id <LHEvent> __unsafe_unretained _highlightedEvent;
+	CALayer *__weak _mouseOverLayer;
 	
 	NSMutableDictionary *_nodeImages;			// by label
 	
@@ -66,7 +66,7 @@ enum {
 	BOOL isDragging;
 }
 
-@property (readonly) LHDocument *document;
+@property (weak, readonly) LHDocument *document;
 
 @property (assign) float timeScaleFactor;
 @property (assign) float nodeScaleFactor;
@@ -74,13 +74,13 @@ enum {
 @property (assign) BOOL flipTimeline;
 @property (assign) BOOL showReferenceStreams;
 
-@property (assign) id <LHEvent> highlightedEvent;
-@property (assign) CALayer *mouseOverLayer;
+@property (unsafe_unretained) id <LHEvent> highlightedEvent;
+@property (weak) CALayer *mouseOverLayer;
 
-@property (readonly) NSDate *timelineStart;
-@property (readonly) NSDate *timelineEnd;
+@property (weak, readonly) NSDate *timelineStart;
+@property (weak, readonly) NSDate *timelineEnd;
 
-@property (readonly) NSSet *streams;
+@property (weak, readonly) NSSet *streams;
 
 - (void)windowControllerDidLoad;
 - (void)layoutIfNeeded;

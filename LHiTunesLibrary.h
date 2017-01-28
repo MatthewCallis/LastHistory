@@ -25,7 +25,7 @@
 - (instancetype)initWithURL:(NSURL *)libraryURL NS_DESIGNATED_INITIALIZER;
 
 @property (readonly) NSURL *libraryURL;
-@property (readonly) NSDictionary *tracks;
+@property (weak, readonly) NSDictionary *tracks;
 
 - (NSDictionary *)trackForTrack:(NSString *)name artist:(NSString *)artist;
 

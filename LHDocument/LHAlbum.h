@@ -2,6 +2,6 @@
 
 @interface LHAlbum : _LHAlbum {}
 
-@property (readonly) NSImage *image;
+@property (weak, readonly) NSImage *image;
 
 @end

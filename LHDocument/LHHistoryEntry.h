@@ -2,7 +2,7 @@
 
 
 @interface LHHistoryEntry : _LHHistoryEntry {
-	CALayer *layer;
+	CALayer *__weak layer;
 	BOOL hidden;
 	
 	// cached values
@@ -13,21 +13,21 @@
 	uint8_t _weekday;
 }
 
-@property (assign) CALayer *layer;
+@property (weak) CALayer *layer;
 
 @property (assign) BOOL hidden;
 
-@property (readonly) NSAttributedString *attributedDisplayName;
+@property (weak, readonly) NSAttributedString *attributedDisplayName;
 
 - (NSArray *)adjacentEntries:(NSUInteger)numEntries ascending:(BOOL)ascending;
 
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *playlists;
 - (NSArray *)adjacentEntriesInPlaylists:(NSArray *)playlists ascending:(BOOL)ascending;
 
-@property (readonly) LHHistoryEntry *previousEntry;
-@property (readonly) LHHistoryEntry *nextEntry;
+@property (weak, readonly) LHHistoryEntry *previousEntry;
+@property (weak, readonly) LHHistoryEntry *nextEntry;
 
-@property (readonly) NSDate *day;
+@property (weak, readonly) NSDate *day;
 @property (readonly) NSInteger year;
 @property (readonly) NSInteger month;
 @property (readonly) NSInteger hour;

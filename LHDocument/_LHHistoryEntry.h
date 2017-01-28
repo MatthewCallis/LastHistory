@@ -16,7 +16,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *time;
+@property (nonatomic, strong) NSNumber *time;
 
 @property int timeValue;
 - (int)timeValue;
@@ -26,13 +26,13 @@
 
 
 
-@property (nonatomic, retain) NSDate *timestamp;
+@property (nonatomic, strong) NSDate *timestamp;
 
 //- (BOOL)validateTimestamp:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSNumber *weight;
+@property (nonatomic, strong) NSNumber *weight;
 
 @property float weightValue;
 - (float)weightValue;
@@ -43,12 +43,12 @@
 
 
 
-@property (nonatomic, retain) LHTrack* track;
+@property (nonatomic, strong) LHTrack* track;
 //- (BOOL)validateTrack:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) LHUser* user;
+@property (nonatomic, strong) LHUser* user;
 //- (BOOL)validateUser:(id*)value_ error:(NSError**)error_;
 
 

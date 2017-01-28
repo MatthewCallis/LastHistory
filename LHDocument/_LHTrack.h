@@ -18,35 +18,35 @@
 
 
 
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSString *mbid;
+@property (nonatomic, strong) NSString *mbid;
 
 //- (BOOL)validateMbid:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, retain) NSSet* trackTags;
+@property (nonatomic, strong) NSSet* trackTags;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *trackTagsSet;
 
 
 
-@property (nonatomic, retain) LHAlbum* album;
+@property (nonatomic, strong) LHAlbum* album;
 //- (BOOL)validateAlbum:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) LHArtist* artist;
+@property (nonatomic, strong) LHArtist* artist;
 //- (BOOL)validateArtist:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSSet* historyEntries;
+@property (nonatomic, strong) NSSet* historyEntries;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *historyEntriesSet;
 
 

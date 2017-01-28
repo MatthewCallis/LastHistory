@@ -60,17 +60,15 @@ NSString *LFWebServiceErrorDomain = @"LFWebServiceErrorDomain";
 	return self;
 }
 
-- (void)dealloc
-{
-	[_apiKey release];
-	[_secret release];
-	[_userName release];
-	[_sessionKey release];
-	
-	[_token release];
-	
-	[super dealloc];
-}
+//- (void)dealloc
+//{
+//	[_apiKey release];
+//	[_secret release];
+//	[_userName release];
+//	[_sessionKey release];
+//	
+//	[_token release];
+//}
 
 - (BOOL)isAuthenticated
 {
@@ -79,7 +77,7 @@ NSString *LFWebServiceErrorDomain = @"LFWebServiceErrorDomain";
 
 - (NSString *)authenticateGetToken
 {
-	[_token release], _token = nil;
+	_token = nil;
 	
 	NSXMLDocument *xml = [self callMethod:@"auth.getToken" withParameters:nil error:nil];
 	if (!xml)
@@ -133,7 +131,7 @@ NSString *LFWebServiceErrorDomain = @"LFWebServiceErrorDomain";
 		self.sessionKey = keyElement.stringValue;
 		
 		// no need for token any more
-		[_token release], _token = nil;
+		_token = nil;
 		return YES;
 	}
 	
@@ -219,7 +217,6 @@ NSString *LFWebServiceErrorDomain = @"LFWebServiceErrorDomain";
 	NSXMLDocument *result = [[NSXMLDocument alloc] initWithXMLString:responseStr
 															  options:0
 																error:&error];
-	[responseStr release];
 	if (!result) {
 		NSLog(@"Error in XML: %@ (%ld)", error.localizedDescription, (long)error.code);
 		NSLog(@"Response:\n%@", responseStr);

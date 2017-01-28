@@ -34,7 +34,7 @@
 {
 	self = [super init];
 	if (self != nil) {
-		_libraryURL = [libraryURL retain];
+		_libraryURL = libraryURL;
 	}
 	return self;
 }

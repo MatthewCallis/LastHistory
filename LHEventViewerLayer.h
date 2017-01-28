@@ -9,22 +9,12 @@
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
 
-@class LHiPhotoRoll;
-
-
-@interface LHEventViewerLayer : CALayer {
-	LHiPhotoRoll *_photoRoll;
-	NSInteger _photoRollIndex;
-	
+@interface LHEventViewerLayer : CALayer {	
 	BOOL _isPlaying;
 	NSTimer *_playTimer;
 }
 
-@property (retain) LHiPhotoRoll *photoRoll;
-@property (assign) NSInteger photoRollIndex;
 @property (assign) BOOL isPlaying;
-
-+ (LHEventViewerLayer *)layerWithPhotoRoll:(LHiPhotoRoll *)roll;
 
 - (BOOL)handleMouseUpAtPoint:(CGPoint)mousePoint;
 

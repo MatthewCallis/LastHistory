@@ -16,31 +16,31 @@
 
 
 
-@property (nonatomic, retain) NSString *mbid;
+@property (nonatomic, strong) NSString *mbid;
 
 //- (BOOL)validateMbid:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, strong) NSString *name;
 
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSString *imagePath;
+@property (nonatomic, strong) NSString *imagePath;
 
 //- (BOOL)validateImagePath:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, retain) LHArtist* artist;
+@property (nonatomic, strong) LHArtist* artist;
 //- (BOOL)validateArtist:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) NSSet* tracks;
+@property (nonatomic, strong) NSSet* tracks;
 @property (NS_NONATOMIC_IOSONLY, readonly, copy) NSMutableSet *tracksSet;
 
 

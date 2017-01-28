@@ -8,14 +8,10 @@
 
 #import "LHHistoryView.h"
 
-#import <CalendarStore/CalendarStore.h>
-
 #import "LHCommonMacros.h"
 #import "LHDocument.h"
 
 #import "LHListeningHistoryStream.h"
-#import "LHCalendarStream.h"
-#import "LHPhotoStream.h"
 #import "LHEventViewerLayer.h"
 
 #import "LHTrack.h"
@@ -23,7 +19,6 @@
 #import "LHAlbum.h"
 #import "LHHistoryEntry.h"
 #import "LHEvent.h"
-#import "LHiPhotoRoll.h"
 #import "LHTimeEvent.h"
 #import "CalEvent+LHEvent.h"
 #import "NSImage-Extras.h"
@@ -44,9 +39,6 @@
 #define CROSSHAIR_ALPHA .1
 
 #define LISTENING_HISTORY_STREAM @"listeningHistoryStream"
-#define CALENDAR_STREAM @"calendarStream"
-#define PHOTO_STREAM @"photoStream"
-
 
 @interface LHHistoryView ()
 - (void)setCurrentEvent:(id <LHEvent, NSObject>)event;
@@ -288,25 +280,13 @@
 	
 	// full-size event viewing
 	[_currentEventViewerLayer removeFromSuperlayer];
-	if ([event isKindOfClass:[LHiPhotoRoll class]])
-	{
-		LHEventViewerLayer *viewerLayer = [LHEventViewerLayer layerWithPhotoRoll:event];
-		viewerLayer.zPosition = kTopZ;
-		
-		_scrollLayer.hidden = YES;
-		_currentEventViewerLayer = viewerLayer;
-		[self.layer addSublayer:viewerLayer];
-	}
-	else
-	{
-		BOOL wasShowing = _currentEventViewerLayer != nil;
-		_scrollLayer.hidden = NO;
-		_currentEventViewerLayer = nil;
-		
-		// layout again in case we were resized during full-size viewing
-		if (wasShowing)
-			[self layoutIfNeeded];
-	}
+    BOOL wasShowing = _currentEventViewerLayer != nil;
+    _scrollLayer.hidden = NO;
+    _currentEventViewerLayer = nil;
+    
+    // layout again in case we were resized during full-size viewing
+    if (wasShowing)
+        [self layoutIfNeeded];
 }
 
 - (void)setHighlightedEvent:(id <LHEvent>)newEvent
@@ -410,11 +390,7 @@
 		*outHitPoint = mousePointInScrollLayer;
 	
 	// check history entries and calendar layers for data
-	CALayer *hitLayer = [[self streamWithName:PHOTO_STREAM] hitTest:mousePointInScrollLayer];
-	if (!hitLayer)
-		hitLayer = [[self streamWithName:CALENDAR_STREAM] hitTest:mousePointInScrollLayer];
-	if (!hitLayer)
-		hitLayer = [[self streamWithName:LISTENING_HISTORY_STREAM] hitTest:mousePointInScrollLayer];
+	CALayer *hitLayer = [[self streamWithName:LISTENING_HISTORY_STREAM] hitTest:mousePointInScrollLayer];
 	
 	return hitLayer;
 }
@@ -832,36 +808,11 @@
 	[self scrollToDate:self.document.firstHistoryEntry.timestamp];
 }
 
-- (void)setupReferenceStreams
-{
+- (void)setupReferenceStreams {
 	NSMutableSet *streams = [NSMutableSet setWithCapacity:2];
-	
-	if (self.showReferenceStreams && ![self streamWithName:CALENDAR_STREAM]) {
-		LHCalendarStream *calendarStream = [[LHCalendarStream alloc] initWithView:self];
-//		calendarStream.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, .5));
-		calendarStream.name = CALENDAR_STREAM;
-		[calendarStream addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:@"labelsLayerX" attribute:kCAConstraintMaxY offset:10.0]];
-		[_scrollLayer addSublayer:calendarStream];
-		[streams addObject:calendarStream];
-	} else {
-		[[self streamWithName:CALENDAR_STREAM] removeFromSuperlayer];
-	}
-	
-	if (self.showReferenceStreams && ![self streamWithName:PHOTO_STREAM])
-	{
-		LHPhotoStream *photoStream = [[LHPhotoStream alloc] initWithView:self];
-//		photoStream.backgroundColor = (CGColorRef) CFMakeCollectable(CGColorCreateGenericGray(0, .2));
-		photoStream.name = PHOTO_STREAM;
-		photoStream.zPosition = 1; // show photos above everything else
-		[photoStream addConstraint:[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:CALENDAR_STREAM attribute:kCAConstraintMaxY offset:5.0]];
-		[_scrollLayer addSublayer:photoStream];
-		[streams addObject:photoStream];
-	} else {
-		[[self streamWithName:PHOTO_STREAM] removeFromSuperlayer];
-	}
-	
+
 	// update listening history constraints
-	NSArray *constraints = @[[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:(self.showReferenceStreams ? PHOTO_STREAM : @"labelsLayerX") attribute:kCAConstraintMaxY offset:10.0],
+	NSArray *constraints = @[[CAConstraint constraintWithAttribute:kCAConstraintMinY relativeTo:(@"labelsLayerX") attribute:kCAConstraintMaxY offset:10.0],
 							[CAConstraint constraintWithAttribute:kCAConstraintMaxY relativeTo:@"superlayer" attribute:kCAConstraintMaxY]];
 	[self streamWithName:LISTENING_HISTORY_STREAM].constraints = constraints;
 	
@@ -1045,32 +996,6 @@
 		infoStringLargeRange = NSMakeRange(0, titleText.length);
 		infoStringSmallRange = NSMakeRange(text.length, smallText.length);
 		infoStringBoldRange = NSMakeRange(0, track.name.length);
-	}
-	else if ([data isKindOfClass:[CalEvent class]])
-	{
-		CalEvent *event = (CalEvent *)data;
-		
-		NSString *titleText = [NSString stringWithFormat:@"%@\n%@ - %@",
-							   event.title,
-							   [outputFormatter stringFromDate:event.startDate], [outputFormatter stringFromDate:event.endDate]];
-		infoStringText = [NSString stringWithFormat:@"%@\n%lu history entries", titleText, (unsigned long)[self.document numberOfHistoryEntriesForEvent:event]];
-		infoStringLargeRange = NSMakeRange(0, titleText.length);
-		infoStringBoldRange = NSMakeRange(0, event.title.length);
-	}
-	else if ([data isKindOfClass:[LHiPhotoRoll class]])
-	{
-		LHiPhotoRoll *roll = (LHiPhotoRoll *)data;
-		
-		NSString *startDate = [outputFormatter stringFromDate:roll.eventStart];
-		NSString *endDate = [outputFormatter stringFromDate:roll.eventEnd];
-		NSString *dateString = startDate;
-		if (![startDate isEqualToString:endDate])
-			dateString = [NSString stringWithFormat:@"%@ - %@", startDate, endDate];
-		
-		NSString *titleText = [NSString stringWithFormat:@"%@\n%@", roll.name, dateString];
-		infoStringText = [NSString stringWithFormat:@"%@\n%lu history entries\n%lu photos", titleText, (unsigned long)[self.document numberOfHistoryEntriesForEvent:roll], (unsigned long)roll.photos.count];
-		infoStringLargeRange = NSMakeRange(0, titleText.length);
-		infoStringBoldRange = NSMakeRange(0, roll.name.length);
 	}
 	
 	NSMutableAttributedString *infoString = nil;

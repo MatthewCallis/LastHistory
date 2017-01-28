@@ -11,16 +11,16 @@
 + (NSArray *)genres;
 + (NSUInteger)genreIndexForGenre:(NSString *)genre;
 
-@property (readonly) NSString *displayName;
-@property (readonly) NSString *trackID;
+@property (weak, readonly) NSString *displayName;
+@property (weak, readonly) NSString *trackID;
 
 @property (readonly) NSUInteger trackCount;
 
-@property (readonly) NSArray *sortedTrackTags;
+@property (weak, readonly) NSArray *sortedTrackTags;
 
 - (NSString *)tagsStringWrappedAt:(NSUInteger)numWrapChars;
-@property (readonly) NSString *tagsString;
+@property (weak, readonly) NSString *tagsString;
 
-@property (readonly) NSString *genre;
+@property (weak, readonly) NSString *genre;
 
 @end

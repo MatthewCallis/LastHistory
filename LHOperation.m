@@ -55,12 +55,11 @@
 	return _context;
 }
 
-- (void)finalize
+- (void)dealloc
 {
 	[self removeObserver:self forKeyPath:@"isExecuting"];
 	[self removeObserver:self forKeyPath:@"isFinished"];
 	
-	[super finalize];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

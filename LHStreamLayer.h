@@ -13,13 +13,13 @@
 
 
 @interface LHStreamLayer : CALayer {
-	LHHistoryView *_view;
+	LHHistoryView *__weak _view;
 	
 	CALayer *_highlightedNode;
 }
 
-@property (readonly) LHHistoryView *view;
-@property (retain) CALayer *highlightedNode;
+@property (weak, readonly) LHHistoryView *view;
+@property (strong) CALayer *highlightedNode;
 
 + (Class)nodeClass;
 

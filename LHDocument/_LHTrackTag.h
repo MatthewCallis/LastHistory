@@ -16,7 +16,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *count;
+@property (nonatomic, strong) NSNumber *count;
 
 @property short countValue;
 - (short)countValue;
@@ -27,12 +27,12 @@
 
 
 
-@property (nonatomic, retain) LHTrack* track;
+@property (nonatomic, strong) LHTrack* track;
 //- (BOOL)validateTrack:(id*)value_ error:(NSError**)error_;
 
 
 
-@property (nonatomic, retain) LHTag* tag;
+@property (nonatomic, strong) LHTag* tag;
 //- (BOOL)validateTag:(id*)value_ error:(NSError**)error_;
 
 

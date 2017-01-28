@@ -8,7 +8,6 @@
 
 #import "LHEventViewerLayer.h"
 
-#import "LHiPhotoRoll.h"
 #import "NSImage-Extras.h"
 
 #define NEXT_BUTTON_LAYER_NAME @"nextButtonLayer"
@@ -25,17 +24,7 @@
 
 @implementation LHEventViewerLayer
 
-@synthesize photoRoll=_photoRoll;
-@synthesize photoRollIndex=_photoRollIndex;
 @synthesize isPlaying=_isPlaying;
-
-+ (LHEventViewerLayer *)layerWithPhotoRoll:(LHiPhotoRoll *)roll
-{
-	LHEventViewerLayer *layer = [self layer];
-	layer.photoRoll = roll;
-	layer.photoRollIndex = 0;
-	return layer;
-}
 
 + (id <CAAction>)defaultActionForKey:(NSString *)key
 {
@@ -117,8 +106,6 @@
 	self = [super initWithLayer:layer];
 	if (self != nil) {
 		LHEventViewerLayer *object = layer;
-		_photoRoll = object->_photoRoll;
-		_photoRollIndex = object->_photoRollIndex;
 		_isPlaying = object->_isPlaying;
 	}
 	return self;
@@ -193,19 +180,6 @@
 	CFRelease(fillPath);
 }
 
-- (void)setPhotoRollIndex:(NSInteger)newIndex
-{
-	NSArray *photos = self.photoRoll.photos;
-	
-	if (newIndex < 0)
-		newIndex = photos.count - abs(newIndex);
-	newIndex = newIndex % photos.count;
-	
-	self.contents = (id)[photos[newIndex] image].cgImage;
-	
-	_photoRollIndex = newIndex;
-}
-
 - (void)setIsPlaying:(BOOL)value
 {
 	_isPlaying = value;
@@ -222,7 +196,6 @@
 
 - (void)onPlayTimer:(NSTimer *)timer
 {
-	self.photoRollIndex++;
 }
 
 - (BOOL)handleMouseUpAtPoint:(CGPoint)mousePoint
@@ -233,10 +206,8 @@
 		self.isPlaying = !self.isPlaying;
 	else if ([hitLayer.name isEqualToString:EXIT_BUTTON_LAYER_NAME])
 		return NO; // exit
-	else if ([hitLayer.name isEqualToString:PREV_BUTTON_LAYER_NAME])
-		self.photoRollIndex--;
-	else
-		self.photoRollIndex++;
+    else if ([hitLayer.name isEqualToString:PREV_BUTTON_LAYER_NAME]) {}
+    else {}
 	
 	return YES;
 }

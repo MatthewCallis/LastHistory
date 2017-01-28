@@ -13,9 +13,8 @@
 @class LHUser;
 @class LHHistoryEntry;
 
-
 @interface LHHistoryRetrievalOperation : LHOperation {
-	NSString *_username;
+	NSString *__weak _username;
 	LHUser *_user;
 	
 	LHHistoryEntry *_firstHistoryEntry;
@@ -31,6 +30,6 @@
 
 - (BOOL)processTrack:(NSXMLElement *)trackElement intoHistoryEntry:(LHHistoryEntry **)outHistoryEntry;
 
-@property (readonly) NSString *username;
+@property (weak, readonly) NSString *username;
 
 @end

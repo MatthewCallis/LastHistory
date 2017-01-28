@@ -19,7 +19,7 @@
 	
 	// check short symbols
 	NSMutableArray *shortSymbols = [NSMutableArray arrayWithCapacity:self.shortStandaloneWeekdaySymbols.count];
-	for (NSString *symbol in [self.shortStandaloneWeekdaySymbols valueForKey:@"lowercaseString"]) {
+	for (__strong NSString *symbol in [self.shortStandaloneWeekdaySymbols valueForKey:@"lowercaseString"]) {
 		if ([symbol hasSuffix:@"."])
 			symbol = [symbol substringToIndex:symbol.length-1];
 		[shortSymbols addObject:symbol];

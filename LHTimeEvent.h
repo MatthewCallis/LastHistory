@@ -12,8 +12,8 @@
 
 
 @interface LHTimeEvent : NSObject <LHEvent> {
-	NSDate *_startDate;
-	NSDate *_endDate;
+	NSDate *__weak _startDate;
+	NSDate *__weak _endDate;
 	NSInteger _startTime;
 	NSInteger _endTime;
 }
@@ -21,8 +21,8 @@
 - (instancetype)initWithStartTime:(NSInteger)startTime endTime:(NSInteger)endTime;
 - (instancetype)initWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate startTime:(NSInteger)startTime endTime:(NSInteger)endTime NS_DESIGNATED_INITIALIZER;
 
-@property (readonly) NSDate *eventStart;
-@property (readonly) NSDate *eventEnd;
+@property (weak, readonly) NSDate *eventStart;
+@property (weak, readonly) NSDate *eventEnd;
 
 @property (readonly) NSInteger eventStartTime;
 @property (readonly) NSInteger eventEndTime;

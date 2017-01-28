@@ -136,8 +136,8 @@
 	_trackEntity = [NSEntityDescription entityForName:@"Track" inManagedObjectContext:context];
 	_albumEntity = [NSEntityDescription entityForName:@"Album" inManagedObjectContext:context];
 	_artistEntity = [NSEntityDescription entityForName:@"Artist" inManagedObjectContext:context];
-	
-	LFWebService *webService = (id)[NSApp.delegate lfWebService];
+
+	LFWebService *webService = ((id<LFWebServiceDelegateDataSource>)NSApp.delegate).lfWebService;
 	NSAssert(webService, @"No web service");
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:4];
@@ -184,8 +184,9 @@
 						[self.document presentError:error];
 				}
 				
+                LHHistoryEntry *fhe = [_firstHistoryEntry copy];
 				NSXMLElement *lastTrack = [lastPageXML.rootElement elementsForName:@"recenttracks"].lastObject.children.lastObject;
-				[self processTrack:lastTrack intoHistoryEntry:&_firstHistoryEntry];
+				[self processTrack:lastTrack intoHistoryEntry:&fhe];
 			}
 		}
 		

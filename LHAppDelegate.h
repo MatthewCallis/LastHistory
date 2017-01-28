@@ -14,6 +14,8 @@
 
 @property (readonly, strong) LFWebService *lfWebService;
 
+- (LFWebService *)lfWebService;
+
 @end
 
 @interface LHAppDelegate : NSObject {
